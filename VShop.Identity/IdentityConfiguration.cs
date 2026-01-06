@@ -8,7 +8,7 @@ using VShop.Identity.Entities;
 using VShop.Identity.Seeds;
 using VShop.Identity.Services;
 
-namespace VShop.Identity.Configurations
+namespace VShop.Identity
 {
     public static class IdentityConfiguration
     {
@@ -154,8 +154,6 @@ namespace VShop.Identity.Configurations
         //    #endregion
         //}
 
-
-
         public static async Task RunSeedAsync(this IServiceProvider service)
         {
             using var scope = service.CreateScope();
@@ -170,8 +168,6 @@ namespace VShop.Identity.Configurations
         }
 
         #region Private methods
-
-
 
         private static void GeneralConfiguration(IServiceCollection services, IConfiguration config)
         {

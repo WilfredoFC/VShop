@@ -15,7 +15,7 @@ namespace VShop.Identity.Services
         private readonly UserManager<AppUser> _userManager;
         public readonly IEmailService _emailService;
         private readonly SignInManager<AppUser> _signInManager;
-        protected AccountService(UserManager<AppUser> userManager, IEmailService emailService, SignInManager<AppUser> signInManager)
+        public AccountService(UserManager<AppUser> userManager, IEmailService emailService, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _emailService = emailService;
