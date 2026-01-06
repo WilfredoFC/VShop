@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="VShop.Application/VShop.Application.csproj" Id="abadbd98-a33c-4246-b4a7-4ff41e65bd2e" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="VShop.Domain/VShop.Domain.csproj" Id="d69a4ecf-5acd-4825-90bb-338b0c9fb1a6" />
+  </Folder>
+  <Folder Name="/Infraestructure/">
+    <Project Path="VShop.Identity/VShop.Identity.csproj" Id="2fedbf07-dc9e-4da9-9694-f379372d5d5a" />
+    <Project Path="VShop.Shared/VShop.Shared.csproj" Id="32157625-6a72-480b-a4ec-4437e4cc8033" />
+    <Project Path="VShopa.Persistences/VShopa.Persistences.csproj" Id="036fe04c-0fa3-406e-b307-dc59a91f32e1" />
+  </Folder>
+  <Folder Name="/Presentation/" />
+</Solution>
