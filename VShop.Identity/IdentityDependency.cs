@@ -10,7 +10,7 @@ using VShop.Identity.Services;
 
 namespace VShop.Identity
 {
-    public static class IdentityConfiguration
+    public static class IdentityDependency
     {
 
         public static void AddIdentityIocForWebApp(this IServiceCollection services, IConfiguration config)

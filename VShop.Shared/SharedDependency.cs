@@ -6,7 +6,7 @@ using VShop.Shared.Services;
 
 namespace VShop.Shared
 {
-    public static class ServiceRegistration
+    public static class SharedDependency
     {
         public static void AddSharedLayerIoc(this IServiceCollection services, IConfiguration config)
         {

@@ -1,0 +1,97 @@
+﻿@model RegisterUserViewModel
+@{
+    ViewData["Title"] = "Registro de Usuario";
+    Layout = "_LayoutAnonymous";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow rounded">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fa fa-user-plus me-2"></i>Registro de Nuevo Usuario</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.HasError != null && ViewBag.HasError)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            @foreach (var error in ViewBag.Errors)
+                            {
+                                <p class="mb-1">@error</p>
+                            }
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-controller="Login" asp-action="Register" method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">Nombre</label>
+                                    <input asp-for="Name" class="form-control" placeholder="Ingrese su nombre" />
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">Apellido</label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Ingrese su apellido" />
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">Correo Electrónico</label>
+                                    <input asp-for="Email" class="form-control" placeholder="Ingrese su correo electrónico" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+                           
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="UserName" class="form-label">Nombre de Usuario</label>
+                                    <input asp-for="UserName" class="form-control" placeholder="Cree un nombre de usuario" />
+                                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Password" class="form-label">Contraseña</label>
+                                    <input type="password" asp-for="Password" class="form-control" placeholder="Cree una contraseña segura" />
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ConfirmPassword" class="form-label">Confirmar Contraseña</label>
+                                    <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Repita la contraseña" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-controller="Login" asp-action="Index" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left me-1"></i>Volver al Login
+                            </a>
+
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save me-1"></i>Registrarse
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

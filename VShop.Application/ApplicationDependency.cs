@@ -15,19 +15,6 @@ namespace VShop.Application
 
             //service.AddScoped<ISavingsAccountServices, SavingsAccountServices>();
             #endregion
-
-            
-
-
-
-
-
-
-
-
-
-
-
         }
     }
 }

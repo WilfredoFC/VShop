@@ -1,0 +1,31 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Confirmación";
+    Layout = "_LayoutAnonymous";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow rounded">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fa fa-check-circle me-2"></i>Confirmación Exitosa</h4>
+                </div>
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fa fa-envelope-open-text text-success mb-3" style="font-size: 3rem;"></i>
+                        <h3 class="fw-bold text-primary">@Model</h3>
+                        <p class="text-muted mt-3">Tu correo electrónico ha sido verificado correctamente.</p>
+                        <p class="text-muted">Ahora puedes iniciar sesión con tus credenciales.</p>
+                    </div>
+
+                    <div class="d-grid gap-2 col-md-6 mx-auto">
+                        <a asp-controller="Login" asp-action="Index" class="btn btn-success py-2">
+                            <i class="fa fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
