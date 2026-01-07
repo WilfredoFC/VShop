@@ -1,0 +1,163 @@
+﻿@model IEnumerable<CategoriaDto>
+@{
+    ViewData["Title"] = "Categorías";
+    ViewData["ActivePage"] = "Categorias";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-folder me-2"></i>Categorías
+                    </h1>
+                    <p class="text-muted mb-0">Gestiona las categorías de tus productos</p>
+                </div>
+                <div>
+                    <a asp-action="Create" class="btn btn-vshop">
+                        <i class="fas fa-plus-circle me-2"></i>Nueva Categoría
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card vshop-card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Lista de Categorías</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Orden</th>
+                                <th>Fecha Creación</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var categoria in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@categoria.Nombre</strong>
+                                        @if (!string.IsNullOrEmpty(categoria.Descripcion))
+                                        {
+                                            <br>
+                                            <small class="text-muted">@categoria.Descripcion</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @(categoria.Tipo == "Personal" ? "bg-info" : "bg-primary")">
+                                            @categoria.Tipo
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (categoria.EsActivo)
+                                        {
+                                            <span class="badge bg-success">Activa</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactiva</span>
+                                        }
+                                    </td>
+                                    <td>@categoria.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Edit" asp-route-id="@categoria.Id"
+                                               class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    title="Eliminar" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal"
+                                                    data-id="@categoria.Id"
+                                                    data-nombre="@categoria.Nombre">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay categorías creadas</h4>
+                    <p class="text-muted mb-4">Comienza organizando tus productos en categorías</p>
+                    <a asp-action="Create" class="btn btn-vshop">
+                        <i class="fas fa-plus-circle me-2"></i>Crear primera categoría
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal de eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar la categoría <strong id="categoriaNombreEliminar"></strong>?</p>
+                <p class="text-danger mb-0">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Esta acción no se puede deshacer. Se eliminarán todas las subcategorías asociadas.
+                    </small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formEliminar" method="post" asp-action="Delete">
+                    <input type="hidden" id="categoriaIdEliminar" name="id" />
+                    <button type="submit" class="btn btn-danger">Eliminar Categoría</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Modal de eliminación
+            $('#deleteModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var id = button.data('id');
+                var nombre = button.data('nombre');
+
+                var modal = $(this);
+                modal.find('#categoriaNombreEliminar').text(nombre);
+                modal.find('#categoriaIdEliminar').val(id);
+            });
+        });
+    </script>
+}

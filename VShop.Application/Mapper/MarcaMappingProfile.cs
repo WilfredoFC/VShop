@@ -10,7 +10,16 @@ namespace VShop.Application.Mapper
         public MarcaMappingProfile() 
         {
             CreateMap<Marca, MarcaDto>().ReverseMap();
-            CreateMap<Marca, MarcaViewModel>();
+
+            // DTO → Entidad
+            CreateMap<MarcaDto, Marca>()
+                .ForMember(dest => dest.Productos, opt => opt.Ignore());
+
+            // DTO → ViewModel
+            CreateMap<MarcaDto, MarcaViewModel>().ReverseMap();
+
+            // ViewModel (Create) → DTO
+            
         }
     }
 }

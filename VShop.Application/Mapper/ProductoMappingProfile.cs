@@ -11,11 +11,33 @@ namespace VShop.Application.Mapper
         public ProductoMappingProfile()
         {
             // Productos
+            // Entidad → DTO
             CreateMap<Producto, ProductoDto>().ReverseMap();
-            CreateMap<Producto, ProductoViewModel>()
-                .ForMember(dest => dest.Categoria, opt => opt.MapFrom(src => src.Categoria.Nombre))
-                .ForMember(dest => dest.Marca, opt => opt.MapFrom(src => src.Marca != null ? src.Marca.Nombre : "Sin marca"))
-                .ForMember(dest => dest.ImagenPrincipal, opt => opt.MapFrom(src => src.Imagenes.FirstOrDefault().UrlImagen));
+
+            // DTO → Entidad
+            CreateMap<ProductoDto, Producto>()
+                .ForMember(dest => dest.Categoria, opt => opt.Ignore())
+                .ForMember(dest => dest.Marca, opt => opt.Ignore())
+                .ForMember(dest => dest.Imagenes, opt => opt.Ignore())
+                .ForMember(dest => dest.PedidoDetalles, opt => opt.Ignore())
+                .ForMember(dest => dest.Resenas, opt => opt.Ignore())
+                .ForMember(dest => dest.CarritoItems, opt => opt.Ignore())
+                .ForMember(dest => dest.InventarioMovimientos, opt => opt.Ignore()).ReverseMap();
+
+            // DTO → ViewModel (para Index)
+            CreateMap<ProductoDto, ProductoViewModel>()
+                .ForMember(dest => dest.Categoria, opt => opt.MapFrom(src => src.Categoria))
+                .ForMember(dest => dest.Marca, opt => opt.MapFrom(src => src.Marca))
+                .ForMember(dest => dest.ImagenPrincipal, opt => opt.Ignore())
+                .ForMember(dest => dest.EstadoStock, opt => opt.Ignore())
+                .ForMember(dest => dest.EstadoStockClase, opt => opt.Ignore())
+                .ForMember(dest => dest.TieneDescuento,
+                    opt => opt.MapFrom(src => src.PrecioDescuento.HasValue && src.PrecioDescuento < src.Precio))
+                .ForMember(dest => dest.PrecioFinal,
+                    opt => opt.MapFrom(src => src.PrecioDescuento.HasValue && src.PrecioDescuento < src.Precio
+                        ? src.PrecioDescuento.Value : src.Precio)).ReverseMap();
+
+           
         }
     }
 }

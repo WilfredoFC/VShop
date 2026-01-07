@@ -1,0 +1,309 @@
+﻿@model CategoriaCreateViewModel
+@{
+    ViewData["Title"] = "Crear Nueva Categoría";
+    ViewData["ActivePage"] = "Categorias";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Categorias" asp-action="Index">Categorías</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crear Nueva</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-folder-plus me-2"></i>Crear Nueva Categoría
+                    </h1>
+                    <p class="text-muted mb-0">Organiza tus productos en categorías para facilitar la navegación</p>
+                </div>
+                <div>
+                    <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <form asp-action="Create" method="post" id="formCategoria">
+                @Html.AntiForgeryToken()
+
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información de la Categoría</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Nombre -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Nombre" class="form-label fw-bold"></label>
+                            <input asp-for="Nombre" class="form-control form-control-vshop"
+                                   placeholder="Ej: Cuidado Personal, Hogar, Electrónica" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            <small class="form-text text-muted">Nombre descriptivo que aparecerá en el menú y filtros.</small>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Descripcion" class="form-label fw-bold"></label>
+                            <textarea asp-for="Descripcion" class="form-control form-control-vshop"
+                                      rows="3" placeholder="Describe esta categoría..."></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                            <small class="form-text text-muted">Opcional. Ayuda a entender el propósito de la categoría.</small>
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Tipo" class="form-label fw-bold"></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="Tipo" value="Personal" checked>
+                                    <label class="form-check-label" asp-for="Tipo">
+                                        <i class="fas fa-user me-1"></i> Personal
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="Tipo" value="Hogar">
+                                    <label class="form-check-label" asp-for="Tipo">
+                                        <i class="fas fa-home me-1"></i> Hogar
+                                    </label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Tipo" class="text-danger small"></span>
+                            <small class="form-text text-muted">Selecciona el tipo principal de productos que contendrá esta categoría.</small>
+                        </div>
+
+                        <!-- Categoría Padre -->
+                        <div class="form-group mb-3">
+                            <label asp-for="CategoriaPadreId" class="form-label fw-bold"></label>
+                            <select asp-for="CategoriaPadreId" class="form-select form-control-vshop">
+                                <option value="">-- Categoría Principal (sin padre) --</option>
+                                @foreach (var categoria in Model.CategoriasPadre)
+                                {
+                                    <option value="@categoria.Id">@categoria.Nombre (@categoria.Tipo)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CategoriaPadreId" class="text-danger small"></span>
+                            <small class="form-text text-muted">
+                                Opcional. Selecciona una categoría padre para crear una subcategoría.
+                                @if (!Model.CategoriasPadre.Any())
+                                {
+                                    <span class="text-warning">No hay categorías disponibles para seleccionar como padre.</span>
+                                }
+                            </small>
+                        </div>
+
+                        <!-- Configuraciones Adicionales -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Orden" class="form-label fw-bold"></label>
+                                    <input asp-for="Orden" type="number" min="0" max="100"
+                                           class="form-control form-control-vshop" />
+                                    <span asp-validation-for="Orden" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Define el orden de aparición en los menús (0 aparece primero).</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opciones de Visualización -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Opciones de Visualización</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" asp-for="MostrarEnMenu" checked>
+                                    <label class="form-check-label fw-bold" asp-for="MostrarEnMenu">
+                                        <i class="fas fa-bars me-2"></i>Mostrar en menú
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Esta categoría aparecerá en los menús de navegación de la tienda.
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" asp-for="EsActivo" checked>
+                                    <label class="form-check-label fw-bold" asp-for="EsActivo">
+                                        <i class="fas fa-check-circle me-2"></i>Categoría Activa
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Las categorías inactivas no se mostrarán en la tienda.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card vshop-card">
+                    <div class="card-body">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+
+                            <button type="submit" class="btn btn-vshop">
+                                <i class="fas fa-save me-2"></i>Crear Categoría
+                            </button>
+
+                            <button type="submit" name="accion" value="guardar-y-nuevo"
+                                    class="btn btn-outline-vshop">
+                                <i class="fas fa-plus-circle me-2"></i>Crear y agregar otra
+                            </button>
+                        </div>
+
+                        <!-- Resumen de validación -->
+                        <div class="alert alert-info mt-4">
+                            <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Campos obligatorios</h6>
+                            <ul class="mb-0 small">
+                                <li>✓ Nombre de la categoría</li>
+                                <li>✓ Tipo de categoría (Personal/Hogar)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Validación del formulario
+            $('#formCategoria').submit(function(e) {
+                // Validar que el nombre no esté vacío
+                const nombre = $('#Nombre').val().trim();
+                if (!nombre) {
+                    e.preventDefault();
+                    mostrarAlerta('error', 'El nombre de la categoría es obligatorio');
+                    return false;
+                }
+
+                // Validar que el tipo esté seleccionado
+                const tipoSeleccionado = $('input[name="Tipo"]:checked').val();
+                if (!tipoSeleccionado) {
+                    e.preventDefault();
+                    mostrarAlerta('error', 'Debes seleccionar un tipo de categoría');
+                    return false;
+                }
+
+                // Mostrar loading
+                const submitBtn = $('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Creando...').prop('disabled', true);
+
+                // Re-habilitar después de 5 segundos por si hay error
+                setTimeout(() => {
+                    submitBtn.html(originalText).prop('disabled', false);
+                }, 5000);
+
+                return true;
+            });
+
+            // Función para mostrar alertas
+            function mostrarAlerta(tipo, mensaje) {
+                const alertClass = tipo === 'error' ? 'danger' : tipo === 'warning' ? 'warning' : 'success';
+                const icono = tipo === 'error' ? 'exclamation-circle' :
+                             tipo === 'warning' ? 'exclamation-triangle' : 'check-circle';
+
+                // Remover alertas anteriores
+                $(`.alert-${alertClass}`).alert('close');
+
+                const alerta = $(`
+                    <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-${icono} me-2"></i>
+                            <div>${mensaje}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+
+                $('#formCategoria').prepend(alerta);
+
+                // Auto cerrar después de 5 segundos
+                setTimeout(() => {
+                    alerta.alert('close');
+                }, 5000);
+            }
+
+            // Generar nombre de URL amigable automático
+            $('#Nombre').on('blur', function() {
+                const nombre = $(this).val().trim();
+                if (nombre) {
+                    // Aquí podrías generar un slug/URL automático si tu modelo lo necesita
+                    // Por ahora solo mostramos un ejemplo en consola
+                    console.log('Nombre ingresado:', nombre);
+
+                    // Sugerir orden basado en tipo seleccionado
+                    const tipo = $('input[name="Tipo"]:checked').val();
+                    if (tipo === 'Personal') {
+                        $('#Orden').val(1);
+                    } else if (tipo === 'Hogar') {
+                        $('#Orden').val(2);
+                    }
+                }
+            });
+
+            // Cambiar estilo visual según el tipo seleccionado
+            $('input[name="Tipo"]').change(function() {
+                const tipo = $(this).val();
+                const cardHeader = $('.card-header.bg-primary');
+
+                if (tipo === 'Personal') {
+                    cardHeader.removeClass('bg-primary').addClass('bg-info');
+                } else {
+                    cardHeader.removeClass('bg-info').addClass('bg-primary');
+                }
+
+                // Sugerir orden
+                if (tipo === 'Personal') {
+                    $('#Orden').val(1);
+                } else if (tipo === 'Hogar') {
+                    $('#Orden').val(2);
+                }
+            });
+
+            // Validar que no se seleccione a sí misma como padre (para edición futura)
+            function validarJerarquia() {
+                // Esta función sería útil en edición
+                // Por ahora solo la dejamos definida
+            }
+
+            // Efecto visual en los radios
+            $('.form-check-input').on('change', function() {
+                $('.form-check-input').parent().removeClass('border-primary');
+                $(this).parent().addClass('border-primary border-2 rounded p-2');
+            });
+
+            // Inicializar con estilo
+            $('input[name="Tipo"]:checked').parent().addClass('border-primary border-2 rounded p-2');
+        });
+    </script>
+}
