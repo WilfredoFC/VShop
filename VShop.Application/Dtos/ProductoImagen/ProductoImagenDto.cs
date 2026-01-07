@@ -1,4 +1,6 @@
-﻿namespace VShop.Application.Dtos.ProductoImagen
+﻿using VShop.Application.Dtos.Producto;
+
+namespace VShop.Application.Dtos.ProductoImagen
 {
     public class ProductoImagenDto : BaseDto
     {
@@ -8,6 +10,6 @@
         public int Orden { get; set; }
 
         // Propiedad de navegación
-        public virtual Producto Producto { get; set; }
+        public virtual ProductoDto Producto { get; set; }
     }
 }

@@ -1,0 +1,596 @@
+﻿@model ProductoCreateViewModel
+@{
+    ViewData["Title"] = "Crear Nuevo Producto";
+    ViewData["ActivePage"] = "Productos";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index">Productos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crear Nuevo</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Crear Nuevo Producto
+                    </h1>
+                    <p class="text-muted mb-0">Completa todos los campos para agregar un nuevo producto al catálogo</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data" id="formProducto">
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <!-- Columna Izquierda - Información Básica -->
+            <div class="col-lg-8">
+                <!-- Información Básica del Producto -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Nombre" class="form-label fw-bold"></label>
+                                    <input asp-for="Nombre" class="form-control form-control-vshop"
+                                           placeholder="Ej: Pefume de 500ml" />
+                                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Nombre descriptivo del producto que aparecerá en el catálogo.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Descripcion" class="form-label fw-bold"></label>
+                                    <textarea asp-for="Descripcion" class="form-control form-control-vshop"
+                                              rows="4" placeholder="Describe las características y beneficios del producto..."></textarea>
+                                    <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Puedes usar HTML básico para formatear el texto.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="SKU" class="form-label fw-bold"></label>
+                                    <input asp-for="SKU" class="form-control form-control-vshop"
+                                           placeholder="Ej: SHAMP-500ML-001" />
+                                    <span asp-validation-for="SKU" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Código único de identificación del producto.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CategoriaId" class="form-label fw-bold"></label>
+                                    <select asp-for="CategoriaId" class="form-select form-control-vshop"
+                                            asp-items="@(new SelectList(Model.Categorias, "Id", "Nombre"))">
+                                        <option value="">-- Seleccione una categoría --</option>
+                                    </select>
+                                    <span asp-validation-for="CategoriaId" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="MarcaId" class="form-label fw-bold"></label>
+                                    <select asp-for="MarcaId" class="form-select form-control-vshop"
+                                            asp-items="@(new SelectList(Model.Marcas, "Id", "Nombre"))">
+                                        <option value="">-- Seleccione una marca (opcional) --</option>
+                                    </select>
+                                    <span asp-validation-for="MarcaId" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Precios y Stock -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tag me-2"></i>Precios y Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Precio" class="form-label fw-bold"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Precio" type="number" step="0.01"
+                                               class="form-control form-control-vshop" placeholder="0.00" />
+                                    </div>
+                                    <span asp-validation-for="Precio" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="PrecioDescuento" class="form-label fw-bold">Precio Promocional</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="PrecioDescuento" type="number" step="0.01"
+                                               class="form-control form-control-vshop" placeholder="0.00"
+                                               id="precioDescuentoInput" />
+                                    </div>
+                                    <span asp-validation-for="PrecioDescuento" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Dejar vacío si no hay descuento.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Porcentaje de Descuento</label>
+                                    <div class="input-group">
+                                        <input asp-for="PorcentajeDescuento" type="number" min="0" max="100"
+                                               class="form-control form-control-vshop" placeholder="0"
+                                               id="porcentajeDescuentoInput" />
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <span asp-validation-for="PorcentajeDescuento" class="text-danger small"></span>
+                                    <div class="mt-2">
+                                        <small class="text-muted">Descuento calculado: </small>
+                                        <span id="descuentoCalculado" class="fw-bold text-success">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold text-muted">Precio Final</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="text" class="form-control form-control-vshop bg-light"
+                                               id="precioFinal" readonly value="0.00" />
+                                    </div>
+                                    <small class="form-text text-success fw-bold" id="ahorroTexto"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Stock" class="form-label fw-bold"></label>
+                                    <input asp-for="Stock" type="number" min="0"
+                                           class="form-control form-control-vshop" />
+                                    <span asp-validation-for="Stock" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="StockMinimo" class="form-label fw-bold"></label>
+                                    <input asp-for="StockMinimo" type="number" min="0"
+                                           class="form-control form-control-vshop" />
+                                    <span asp-validation-for="StockMinimo" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Se enviará alerta cuando el stock llegue a este nivel.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imágenes del Producto -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-images me-2"></i>Imágenes del Producto</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Recomendaciones:</strong> Sube imágenes de alta calidad. La primera imagen será la principal.
+                                    Formatos permitidos: JPG, PNG, WEBP. Tamaño máximo: 5MB por imagen.
+                                </div>
+                            </div>
+
+                            <!-- Zona de arrastrar y soltar -->
+                            <div class="col-12">
+                                <div class="dropzone border rounded p-5 text-center" id="dropzone">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5>Arrastra y suelta imágenes aquí</h5>
+                                    <p class="text-muted">o haz clic para seleccionar archivos</p>
+                                    <input type="file" asp-for="Imagenes" class="d-none" id="fileInput" multiple
+                                           accept="image/*" />
+                                    <button type="button" class="btn btn-vshop mt-3" id="btnSeleccionarArchivos">
+                                        <i class="fas fa-folder-open me-2"></i>Seleccionar Imágenes
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Vista previa de imágenes -->
+                            <div class="col-12 mt-4">
+                                <h6 class="mb-3">Vista Previa de Imágenes</h6>
+                                <div class="row" id="previewContainer">
+                                    <div class="col-12 text-center">
+                                        <p class="text-muted">No hay imágenes seleccionadas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha - Configuraciones Adicionales -->
+            <div class="col-lg-4">
+                <!-- Estado y Opciones -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Estado y Opciones</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" asp-for="EsActivo" checked>
+                            <label class="form-check-label fw-bold" asp-for="EsActivo">Producto Activo</label>
+                            <small class="form-text text-muted d-block">Los productos inactivos no se mostrarán en la tienda.</small>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" asp-for="EsDestacado">
+                            <label class="form-check-label fw-bold" asp-for="EsDestacado">Producto Destacado</label>
+                            <small class="form-text text-muted d-block">Aparecerá en secciones especiales de la tienda.</small>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" asp-for="EsNuevo" checked>
+                            <label class="form-check-label fw-bold" asp-for="EsNuevo">Marcar como Nuevo</label>
+                            <small class="form-text text-muted d-block">Mostrará la etiqueta "Nuevo" en la tienda.</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Fecha de creación automática -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <strong>Fecha de creación:</strong> Se registrará automáticamente al guardar.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-play-circle me-2"></i>Acciones</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-vshop btn-lg">
+                                <i class="fas fa-save me-2"></i>Guardar Producto
+                            </button>
+
+                            <button type="submit" name="accion" value="guardar-y-nuevo"
+                                    class="btn btn-outline-vshop">
+                                <i class="fas fa-plus-circle me-2"></i>Guardar y Crear Otro
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Resumen de validación -->
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Campos obligatorios</h6>
+                            <ul class="mb-0 small">
+                                <li>✓ Nombre del producto</li>
+                                <li>✓ Precio normal</li>
+                                <li>✓ SKU</li>
+                                <li>✓ Stock inicial</li>
+                                <li>✓ Categoría</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Variables para las imágenes
+            let imagenes = [];
+            let contadorOrden = 0;
+
+            // Calcular precios
+            function calcularPrecios() {
+                const precio = parseFloat($('#Precio').val()) || 0;
+                let precioDescuento = parseFloat($('#precioDescuentoInput').val()) || null;
+                let porcentaje = parseInt($('#porcentajeDescuentoInput').val()) || 0;
+
+                // Si se ingresó porcentaje, calcular precio de descuento
+                if (porcentaje > 0 && porcentaje <= 100) {
+                    precioDescuento = precio * (1 - (porcentaje / 100));
+                    $('#precioDescuentoInput').val(precioDescuento.toFixed(2));
+                }
+
+                // Si se ingresó precio de descuento, calcular porcentaje
+                if (precioDescuento && precio > 0) {
+                    const calculoPorcentaje = 100 - ((precioDescuento / precio) * 100);
+                    $('#porcentajeDescuentoInput').val(Math.round(calculoPorcentaje));
+                }
+
+                // Calcular precio final y ahorro
+                const precioFinal = precioDescuento && precioDescuento < precio ? precioDescuento : precio;
+                $('#precioFinal').val(precioFinal.toFixed(2));
+
+                if (precioDescuento && precioDescuento < precio) {
+                    const ahorro = precio - precioDescuento;
+                    const ahorroPorcentaje = ((ahorro / precio) * 100).toFixed(0);
+                    $('#ahorroTexto').html(`<i class="fas fa-badge-percent me-1"></i>Ahorras $${ahorro.toFixed(2)} (${ahorroPorcentaje}%)`);
+                } else {
+                    $('#ahorroTexto').html('');
+                }
+            }
+
+            // Eventos para cálculo de precios
+            $('#Precio, #precioDescuentoInput, #porcentajeDescuentoInput').on('input', calcularPrecios);
+
+            // Inicializar cálculo
+            calcularPrecios();
+
+            // Dropzone - arrastrar y soltar
+            const dropzone = $('#dropzone');
+            const fileInput = $('#fileInput');
+            const btnSeleccionar = $('#btnSeleccionarArchivos');
+            const previewContainer = $('#previewContainer');
+
+            // Click en el botón o dropzone
+            btnSeleccionar.click(function() {
+                fileInput.click();
+            });
+
+            dropzone.click(function(e) {
+                if (e.target === dropzone[0] || $(e.target).hasClass('dropzone')) {
+                    fileInput.click();
+                }
+            });
+
+            // Eventos de arrastrar
+            dropzone.on('dragover', function(e) {
+                e.preventDefault();
+                dropzone.addClass('dragover');
+            });
+
+            dropzone.on('dragleave', function(e) {
+                e.preventDefault();
+                dropzone.removeClass('dragover');
+            });
+
+            dropzone.on('drop', function(e) {
+                e.preventDefault();
+                dropzone.removeClass('dragover');
+
+                const files = e.originalEvent.dataTransfer.files;
+                procesarArchivos(files);
+            });
+
+            // Cuando se seleccionan archivos
+            fileInput.change(function() {
+                procesarArchivos(this.files);
+            });
+
+            function procesarArchivos(files) {
+                const archivosValidos = Array.from(files).filter(archivo => {
+                    const tipoValido = archivo.type.startsWith('image/');
+                    const tamanoValido = archivo.size <= 5 * 1024 * 1024; // 5MB
+
+                    if (!tipoValido) {
+                        mostrarAlerta('error', 'Solo se permiten imágenes (JPG, PNG, WEBP)');
+                        return false;
+                    }
+
+                    if (!tamanoValido) {
+                        mostrarAlerta('error', `La imagen ${archivo.name} excede el tamaño máximo de 5MB`);
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // Agregar a la lista
+                archivosValidos.forEach(archivo => {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        const nuevaImagen = {
+                            id: Date.now() + contadorOrden++,
+                            nombre: archivo.name,
+                            url: e.target.result,
+                            archivo: archivo,
+                            esPrincipal: imagenes.length === 0, // La primera es principal
+                            orden: imagenes.length + 1
+                        };
+
+                        imagenes.push(nuevaImagen);
+                        actualizarVistaPrevia();
+                        actualizarInputFiles();
+                    };
+
+                    reader.readAsDataURL(archivo);
+                });
+            }
+
+            function actualizarVistaPrevia() {
+                previewContainer.empty();
+
+                if (imagenes.length === 0) {
+                    previewContainer.html(`
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No hay imágenes seleccionadas</p>
+                        </div>
+                    `);
+                    return;
+                }
+
+                imagenes.forEach((img, index) => {
+                    const col = `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="preview-item" data-id="${img.id}">
+                                <img src="${img.url}" alt="${img.nombre}" class="img-fluid">
+
+                                ${img.esPrincipal ?
+                                    `<span class="preview-badge badge bg-success">Principal</span>` :
+                                    `<button type="button" class="btn btn-sm btn-success preview-actions" onclick="establecerPrincipal(${img.id})" title="Establecer como principal">
+                                        <i class="fas fa-star"></i>
+                                    </button>`
+                                }
+
+                                <button type="button" class="btn btn-sm btn-danger preview-actions" style="right: 40px;"
+                                        onclick="eliminarImagen(${img.id})" title="Eliminar imagen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <div class="preview-order">${index + 1}</div>
+
+                                <div class="p-2 bg-light">
+                                    <small class="d-block text-truncate" title="${img.nombre}">${img.nombre}</small>
+                                    <small class="text-muted">${(img.archivo.size / 1024).toFixed(0)} KB</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    previewContainer.append(col);
+                });
+            }
+
+            function actualizarInputFiles() {
+                // Crear un nuevo DataTransfer
+                const dataTransfer = new DataTransfer();
+
+                // Agregar cada archivo
+                imagenes.forEach(img => {
+                    dataTransfer.items.add(img.archivo);
+                });
+
+                // Asignar al input
+                fileInput[0].files = dataTransfer.files;
+            }
+
+            // Funciones globales para los botones
+            window.establecerPrincipal = function(id) {
+                imagenes.forEach(img => {
+                    img.esPrincipal = img.id === id;
+                });
+                actualizarVistaPrevia();
+            };
+
+            window.eliminarImagen = function(id) {
+                if (confirm('¿Estás seguro de eliminar esta imagen?')) {
+                    imagenes = imagenes.filter(img => img.id !== id);
+
+                    // Si eliminamos la principal y hay más imágenes, hacer la siguiente principal
+                    if (imagenes.length > 0 && !imagenes.some(img => img.esPrincipal)) {
+                        imagenes[0].esPrincipal = true;
+                    }
+
+                    actualizarVistaPrevia();
+                    actualizarInputFiles();
+                }
+            };
+
+            // Validación del formulario
+            $('#formProducto').submit(function(e) {
+                // Validar que al menos haya una imagen
+                if (imagenes.length === 0) {
+                    e.preventDefault();
+                    mostrarAlerta('warning', 'Debes subir al menos una imagen del producto');
+                    return false;
+                }
+
+                // Validar que el SKU sea único (simulación)
+                const sku = $('#SKU').val();
+                if (sku) {
+                    // Aquí iría una llamada AJAX para verificar si el SKU existe
+                    // Por ahora, solo mostramos un mensaje de ejemplo
+                    console.log('Verificando SKU:', sku);
+                }
+
+                // Mostrar loading
+                $('button[type="submit"]').html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
+            });
+
+            // Función para mostrar alertas
+            function mostrarAlerta(tipo, mensaje) {
+                const alertClass = tipo === 'error' ? 'danger' : tipo === 'warning' ? 'warning' : 'success';
+
+                const alerta = $(`
+                    <div class="alert alert-${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3"
+                         style="z-index: 9999; min-width: 300px;" role="alert">
+                        <i class="fas fa-${tipo === 'error' ? 'exclamation-circle' : tipo === 'warning' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                        ${mensaje}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+
+                $('body').append(alerta);
+
+                // Auto cerrar después de 5 segundos
+                setTimeout(() => {
+                    alerta.alert('close');
+                }, 5000);
+            }
+
+            // Generar SKU automático si está vacío
+            $('#Nombre').on('blur', function() {
+                if (!$('#SKU').val()) {
+                    const nombre = $(this).val();
+                    if (nombre) {
+                        // Generar SKU simple
+                        const sku = nombre.substring(0, 8).toUpperCase().replace(/\s+/g, '-') +
+                                   '-' + Math.floor(100 + Math.random() * 900);
+                        $('#SKU').val(sku);
+                    }
+                }
+            });
+
+            // Auto-guardado automático cada 30 segundos (opcional)
+            let autoSaveTimer;
+            function iniciarAutoSave() {
+                autoSaveTimer = setTimeout(function() {
+                    if ($('#Nombre').val() && $('#Precio').val()) {
+                        console.log('Auto-guardando borrador...');
+                        // Aquí iría la lógica de auto-guardado
+                    }
+                }, 30000); // 30 segundos
+            }
+
+            // Reiniciar auto-save cuando se modifica algo
+            $('input, textarea, select').on('input', function() {
+                clearTimeout(autoSaveTimer);
+                iniciarAutoSave();
+            });
+
+            iniciarAutoSave();
+        });
+    </script>
+}

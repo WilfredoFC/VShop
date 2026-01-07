@@ -13,7 +13,15 @@ namespace VShop.Application
             #region Services IOC
             service.AddTransient(typeof(IBaseServices<,>), typeof(BaseServices<,>));
 
-            //service.AddScoped<ISavingsAccountServices, SavingsAccountServices>();
+            service.AddScoped<ICarritoItemService, CarritoItemService>();
+            service.AddScoped<ICategoriaService, CategoriaService>();
+            service.AddScoped<IInventarioMovimientoService, InventarioMovimientoService>();
+            service.AddScoped<IMarcaService, MarcaService>();
+            service.AddScoped<IPedidoDetalleService, PedidoDetalleService>();
+            service.AddScoped<IPedidoService, PedidoService>();
+            service.AddScoped<IProductoImagenService, ProductoImagenService>();
+            service.AddScoped<IProductoService, ProductoService>();
+            service.AddScoped<IResenaService, ResenaService>();
             #endregion
         }
     }

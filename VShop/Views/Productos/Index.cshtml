@@ -1,0 +1,571 @@
+﻿@model ProductosIndexViewModel
+@{
+    ViewData["Title"] = "Gestión de Productos";
+    ViewData["ActivePage"] = "Productos";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-boxes me-2"></i>Productos
+                    </h1>
+                    <p class="text-muted mb-0">Gestiona todos los productos de tu tienda</p>
+                </div>
+                <div>
+                    <a asp-action="Create" class="btn btn-vshop">
+                        <i class="fas fa-plus-circle me-2"></i>Nuevo Producto
+                    </a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Filtros -->
+    <div class="card vshop-card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" id="filtroForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label asp-for="Filtro.Busqueda" class="form-label">Buscar producto</label>
+                        <input type="text" class="form-control form-control-vshop" asp-for="Filtro.Busqueda"
+                               placeholder="Nombre, SKU o descripción">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Filtro.CategoriaId" class="form-label">Categoría</label>
+                        <select class="form-select form-control-vshop" asp-for="Filtro.CategoriaId">
+                            <option value="">Todas</option>
+                            @foreach (var categoria in Model.Categorias)
+                            {
+                                <option value="@categoria.Id">@categoria.Nombre</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Filtro.MarcaId" class="form-label">Marca</label>
+                        <select class="form-select form-control-vshop" asp-for="Filtro.MarcaId">
+                            <option value="">Todas</option>
+                            @foreach (var marca in Model.Marcas)
+                            {
+                                <option value="@marca.Id">@marca.Nombre</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Filtro.EstadoStock" class="form-label">Estado stock</label>
+                        <select class="form-select form-control-vshop" asp-for="Filtro.EstadoStock">
+                            <option value="todos">Todos</option>
+                            <option value="disponible">Disponible</option>
+                            <option value="bajo">Stock bajo</option>
+                            <option value="agotado">Agotado</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Filtro.OrdenarPor" class="form-label">Ordenar por</label>
+                        <select class="form-select form-control-vshop" asp-for="Filtro.OrdenarPor">
+                            <option value="nombre">Nombre (A-Z)</option>
+                            <option value="precio_asc">Precio (Menor a Mayor)</option>
+                            <option value="precio_desc">Precio (Mayor a Menor)</option>
+                            <option value="stock">Stock</option>
+                            <option value="reciente">Más reciente</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-1">
+                        <div class="form-check mt-4 pt-3">
+                            <input class="form-check-input" type="checkbox" asp-for="Filtro.SoloConDescuento" id="soloDescuento">
+                            <label class="form-check-label" for="soloDescuento">En oferta</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-vshop">
+                                <i class="fas fa-search me-2"></i>Aplicar Filtros
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-2"></i>Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Productos -->
+    <div class="card vshop-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Lista de Productos
+                <span class="badge bg-vshop-gradient ms-2">@Model.Paginacion.TotalRegistros productos</span>
+            </h5>
+
+            <div class="d-flex align-items-center">
+                <span class="me-2">Mostrar:</span>
+                <select class="form-select form-select-sm w-auto" id="registrosPorPagina">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Tabla de productos -->
+            <div class="table-responsive">
+                <table class="table table-vshop table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th width="60">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkAll">
+                                </div>
+                            </th>
+                            <th width="80">Imagen</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>SKU</th>
+                            <th>Estado</th>
+                            <th width="150" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Productos.Any())
+                        {
+                            @foreach (var producto in Model.Productos)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input producto-check" type="checkbox" value="@producto.Id">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                                        {
+                                            <img src="@producto.ImagenPrincipal" class="img-thumbnail" width="60" height="60"
+                                                 alt="@producto.Nombre" style="object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <strong class="text-vshop-primary">@producto.Nombre</strong>
+                                            <small class="text-muted">@(producto.Descripcion?.Length > 50 ? producto.Descripcion.Substring(0, 50) + "..." : producto.Descripcion)</small>
+                                            @if (!string.IsNullOrEmpty(producto.Marca))
+                                            {
+                                                <small class="text-vshop-secondary">@producto.Marca</small>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@producto.Categoria</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            @if (producto.TieneDescuento)
+                                            {
+                                                <span class="text-success fw-bold">@producto.PrecioFinal.ToString("C")</span>
+                                                <small class="text-muted text-decoration-line-through">@producto.Precio.ToString("C")</small>
+                                                <span class="badge bg-danger mt-1">OFERTA</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold">@producto.Precio.ToString("C")</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1" style="height: 8px;">
+                                                @{
+                                                    var stockPorcentaje = producto.Stock > 100 ? 100 : producto.Stock;
+                                                }
+                                                <div class="progress-bar bg-@producto.EstadoStockClase"
+                                                     role="progressbar"
+                                                     style="width: @stockPorcentaje%"
+                                                     aria-valuenow="@producto.Stock"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="ms-2 fw-bold">@producto.Stock</span>
+                                        </div>
+                                        <small class="text-@producto.EstadoStockClase">
+                                            @producto.EstadoStock
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <code>@producto.SKU</code>
+                                    </td>
+                                    <td>
+                                        @if (producto.EsActivo)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Activo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-times-circle me-1"></i>Inactivo
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@producto.Id"
+                                               class="btn btn-outline-info" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@producto.Id"
+                                               class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    title="Eliminar"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal"
+                                                    data-id="@producto.Id"
+                                                    data-nombre="@producto.Nombre">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <div class="py-4">
+                                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                        <h4 class="text-muted">No se encontraron productos</h4>
+                                        <p class="text-muted mb-0">Intenta ajustar los filtros o agrega un nuevo producto.</p>
+                                        <a asp-action="Create" class="btn btn-vshop mt-3">
+                                            <i class="fas fa-plus-circle me-2"></i>Crear primer producto
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie con paginación y acciones múltiples -->
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="form-check d-inline-block me-3">
+                        <input class="form-check-input" type="checkbox" id="seleccionMultiple">
+                        <label class="form-check-label" for="seleccionMultiple">
+                            Seleccionar todos
+                        </label>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                id="activarSeleccionados" disabled>
+                            <i class="fas fa-check-circle me-1"></i>Activar
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                id="desactivarSeleccionados" disabled>
+                            <i class="fas fa-times-circle me-1"></i>Desactivar
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                id="eliminarSeleccionados" disabled>
+                            <i class="fas fa-trash me-1"></i>Eliminar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                @if (Model.Paginacion.TotalPaginas > 1)
+                {
+                    <nav aria-label="Paginación de productos">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.Paginacion.PaginaActual == 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)"
+                                   asp-all-route-data="@(Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString()))">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.Paginacion.TotalPaginas; i++)
+                            {
+                                if (i == 1 || i == Model.Paginacion.TotalPaginas ||
+                                (i >= Model.Paginacion.PaginaActual - 2 && i <= Model.Paginacion.PaginaActual + 2))
+                                {
+                                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                                        <a class="page-link"
+                                           asp-action="Index"
+                                           asp-route-pagina="@i"
+                                           asp-all-route-data="@(Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString()))">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+                                else if (i == Model.Paginacion.PaginaActual - 3 || i == Model.Paginacion.PaginaActual + 3)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                            }
+
+                            <li class="page-item @(Model.Paginacion.PaginaActual == Model.Paginacion.TotalPaginas ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)"
+                                   asp-all-route-data="@(Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString()))">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de resumen -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card vshop-card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Total Productos</h6>
+                    <h3 class="text-vshop-primary mb-0">@Model.Paginacion.TotalRegistros</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card vshop-card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Stock Bajo</h6>
+                    <h3 class="text-warning mb-0">
+                        @(Model.Productos.Count(p => p.Stock <= 10 && p.Stock > 0))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card vshop-card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Agotados</h6>
+                    <h3 class="text-danger mb-0">
+                        @(Model.Productos.Count(p => p.Stock == 0))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card vshop-card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">En Oferta</h6>
+                    <h3 class="text-success mb-0">
+                        @(Model.Productos.Count(p => p.TieneDescuento))
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar el producto <strong id="productoNombreEliminar"></strong>?</p>
+                <p class="text-danger mb-0">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Esta acción no se puede deshacer. Se eliminarán todas las imágenes y datos asociados.
+                    </small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formEliminar" method="post" asp-action="Delete">
+                    <input type="hidden" id="productoIdEliminar" name="id" />
+                    <button type="submit" class="btn btn-danger">Eliminar Producto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Modal de eliminación
+            $('#deleteModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var id = button.data('id');
+                var nombre = button.data('nombre');
+
+                var modal = $(this);
+                modal.find('#productoNombreEliminar').text(nombre);
+                modal.find('#productoIdEliminar').val(id);
+            });
+
+            // Selección múltiple
+            $('#checkAll').change(function() {
+                $('.producto-check').prop('checked', this.checked);
+                actualizarBotonesSeleccion();
+            });
+
+            $('.producto-check').change(function() {
+                if (!this.checked) {
+                    $('#checkAll').prop('checked', false);
+                } else {
+                    var allChecked = $('.producto-check:checked').length === $('.producto-check').length;
+                    $('#checkAll').prop('checked', allChecked);
+                }
+                actualizarBotonesSeleccion();
+            });
+
+            function actualizarBotonesSeleccion() {
+                var seleccionados = $('.producto-check:checked').length;
+                var activarBtn = $('#activarSeleccionados');
+                var desactivarBtn = $('#desactivarSeleccionados');
+                var eliminarBtn = $('#eliminarSeleccionados');
+
+                if (seleccionados > 0) {
+                    activarBtn.prop('disabled', false);
+                    desactivarBtn.prop('disabled', false);
+                    eliminarBtn.prop('disabled', false);
+                } else {
+                    activarBtn.prop('disabled', true);
+                    desactivarBtn.prop('disabled', true);
+                    eliminarBtn.prop('disabled', true);
+                }
+            }
+
+            // Cambiar registros por página
+            $('#registrosPorPagina').change(function() {
+                var valor = $(this).val();
+                var url = new URL(window.location.href);
+                url.searchParams.set('registrosPorPagina', valor);
+                url.searchParams.set('pagina', '1');
+                window.location.href = url.toString();
+            });
+
+            // Setear valor actual de registros por página
+            $('#registrosPorPagina').val('@Model.Paginacion.RegistrosPorPagina');
+
+            // Selección múltiple
+            $('#seleccionMultiple').change(function() {
+                if (this.checked) {
+                    $('.producto-check').prop('checked', true);
+                } else {
+                    $('.producto-check').prop('checked', false);
+                }
+                $('#checkAll').prop('checked', this.checked);
+                actualizarBotonesSeleccion();
+            });
+
+            // Acciones múltiples
+            $('#activarSeleccionados').click(function() {
+                var ids = $('.producto-check:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (ids.length > 0) {
+                    if (confirm(`¿Activar ${ids.length} producto(s) seleccionado(s)?`)) {
+                        realizarAccionMultiple('activar', ids);
+                    }
+                }
+            });
+
+            $('#desactivarSeleccionados').click(function() {
+                var ids = $('.producto-check:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (ids.length > 0) {
+                    if (confirm(`¿Desactivar ${ids.length} producto(s) seleccionado(s)?`)) {
+                        realizarAccionMultiple('desactivar', ids);
+                    }
+                }
+            });
+
+            $('#eliminarSeleccionados').click(function() {
+                var ids = $('.producto-check:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (ids.length > 0) {
+                    if (confirm(`¿Eliminar ${ids.length} producto(s) seleccionado(s)? Esta acción no se puede deshacer.`)) {
+                        realizarAccionMultiple('eliminar', ids);
+                    }
+                }
+            });
+
+            function realizarAccionMultiple(accion, ids) {
+                $.ajax({
+                    url: '@Url.Action("AccionMultiple", "Productos")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        accion: accion,
+                        ids: ids
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Error al realizar la acción');
+                    }
+                });
+            }
+
+            
+
+            // Auto-submit del filtro al cambiar algunos selects
+            $('#Filtro_CategoriaId, #Filtro_MarcaId, #Filtro_EstadoStock, #Filtro_OrdenarPor').change(function() {
+                setTimeout(function() {
+                    $('#filtroForm').submit();
+                }, 300);
+            });
+        });
+    </script>
+}

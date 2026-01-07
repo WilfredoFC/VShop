@@ -29,7 +29,15 @@ namespace VShop.Persistences
             #endregion
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository< >));
 
-            //services.AddTransient<ISavingsAccountRepository, SavingsAccountRepository>();
+            services.AddTransient<ICarritoItemRepository, CarritoItemRepository>();
+            services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+            services.AddTransient<IInventarioMovimientoRepository, InventarioMovimientoRepository>();
+            services.AddTransient<IMarcaRepository, MarcaRepository>();
+            services.AddTransient<IPedidoDetalleRepository, PedidoDetalleRepository>();
+            services.AddTransient<IPedidoRepository, PedidoRepository>();
+            services.AddTransient<IProductoImagenRepository, ProductoImagenRepository>();
+            services.AddTransient<IProductoRepository, ProductoRepository>();
+            services.AddTransient<IResenaRepository, ResenaRepository>();
 
         }
     }

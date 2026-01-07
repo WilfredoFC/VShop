@@ -42,7 +42,7 @@
                     <a class="navbar-brand mb-4 mx-3" asp-controller="Home" asp-action="Index">VShop</a>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-controller="Productos" asp-action="Index">Productos</a>
                         </li>
 
                         <li class="nav-item">
@@ -55,6 +55,7 @@
 
             <div class="col-md-9 col-lg-10 main-content">
                 <main role="main" class="pb-3">
+                    <partial name="_AlertsPartial" />
                     @RenderBody()
                 </main>
 

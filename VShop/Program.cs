@@ -1,7 +1,8 @@
+using VShop.Application;
+using VShop.Helpers;
+using VShop.Identity;
 using VShop.Persistences;
 using VShop.Shared;
-using VShop.Application;
-using VShop.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddPersistenceDependencies(builder.Configuration);
 builder.Services.AddIdentityIocForWebApp(builder.Configuration);
 builder.Services.AddSharedLayerIoc(builder.Configuration);
 builder.Services.AddApplicationLayer();
+
+builder.Services.AddScoped<FileManager>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 
 var app = builder.Build();
