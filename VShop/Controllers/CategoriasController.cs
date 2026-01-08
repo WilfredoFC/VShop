@@ -1,5 +1,4 @@
-﻿// Controllers/CategoriasController.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VShop.Application.Dtos.Categoria;
 using VShop.Application.Interfaces;
 using VShop.Application.ViewModels.Categoria;
@@ -29,13 +28,6 @@ namespace VShop.Controllers
 
             var viewModel = new CategoriaCreateViewModel
             {
-                CategoriasPadre = categoriasPadre.Select(c => new CategoriaViewModel
-                {
-                    Id = c.Id,
-                    Nombre = c.Nombre,
-                    Tipo = c.Tipo,
-                    EsActivo = c.EsActivo
-                }).ToList(),
                 EsActivo = true,
                 MostrarEnMenu = true,
                 Orden = 0,
@@ -52,16 +44,6 @@ namespace VShop.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Recargar categorías padre
-                var categoriasPadre = await _categoriaService.GetAllListDto();
-                model.CategoriasPadre = categoriasPadre.Select(c => new CategoriaViewModel
-                {
-                    Id = c.Id,
-                    Nombre = c.Nombre,
-                    Tipo = c.Tipo,
-                    EsActivo = c.EsActivo
-                }).ToList();
-
                 return View(model);
             }
 
@@ -91,16 +73,6 @@ namespace VShop.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"Error al crear la categoría: {ex.Message}");
-
-                // Recargar categorías padre
-                var categoriasPadre = await _categoriaService.GetAllListDto();
-                model.CategoriasPadre = categoriasPadre.Select(c => new CategoriaViewModel
-                {
-                    Id = c.Id,
-                    Nombre = c.Nombre,
-                    Tipo = c.Tipo,
-                    EsActivo = c.EsActivo
-                }).ToList();
 
                 return View(model);
             }

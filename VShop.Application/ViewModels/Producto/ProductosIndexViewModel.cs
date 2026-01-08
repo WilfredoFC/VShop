@@ -1,6 +1,7 @@
-﻿using VShop.Application.ViewModels.Marca;
+﻿using VShop.Application.ViewModels.Categoria;
+using VShop.Application.ViewModels.Marca;
 
-namespace VShop.Application.ViewModels.Productos
+namespace VShop.Application.ViewModels.Producto
 {
         public class ProductosIndexViewModel
         {

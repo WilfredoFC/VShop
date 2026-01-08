@@ -1,0 +1,191 @@
+﻿@model MarcaViewModel
+@{
+    ViewData["Title"] = "Crear Nueva Marca";
+    ViewData["ActivePage"] = "Marcas";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Marcas" asp-action="Index">Marcas</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crear Nueva</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-folder-plus me-2"></i>Crear Nueva Marca
+                    </h1>
+                    <p class="text-muted mb-0">Organiza tus productos en marcas para facilitar la navegación</p>
+                </div>
+                <div>
+                    <a asp-controller="Marcas" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <form asp-action="Create" method="post" id="formMarca">
+                @Html.AntiForgeryToken()
+
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información de la Marca</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Nombre -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Nombre" class="form-label fw-bold"></label>
+                            <input asp-for="Nombre" class="form-control form-control-vshop"
+                                   placeholder="Ej: Cuidado Personal, Hogar, Electrónica" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            <small class="form-text text-muted">Nombre descriptivo que aparecerá en el menú y filtros.</small>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Descripcion" class="form-label fw-bold"></label>
+                            <textarea asp-for="Descripcion" class="form-control form-control-vshop"
+                                      rows="3" placeholder="Describe esta marca..."></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                            <small class="form-text text-muted">Opcional. Ayuda a entender el propósito de la marca.</small>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Acciones -->
+                    <div class="card vshop-card">
+                        <div class="card-body">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a asp-controller="Marcas" asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                                    <i class="fas fa-times me-2"></i>Cancelar
+                                </a>
+
+                                <button type="submit" class="btn btn-vshop">
+                                    <i class="fas fa-save me-2"></i>Crear Marca
+                                </button>
+
+                                <button type="submit" name="accion" value="guardar-y-nuevo"
+                                        class="btn btn-outline-vshop">
+                                    <i class="fas fa-plus-circle me-2"></i>Crear y agregar otra
+                                </button>
+                            </div>
+
+                            <!-- Resumen de validación -->
+                            <div class="alert alert-info mt-4">
+                                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Campos obligatorios</h6>
+                                <ul class="mb-0 small">
+                                    <li>✓ Nombre de la marca</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Validación del formulario
+            $('#formMarca').submit(function(e) {
+                // Validar que el nombre no esté vacío
+                const nombre = $('#Nombre').val().trim();
+                if (!nombre) {
+                    e.preventDefault();
+                    mostrarAlerta('error', 'El nombre de la marca es obligatorio');
+                    return false;
+                }
+
+                // Mostrar loading
+                const submitBtn = $('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Creando...').prop('disabled', true);
+
+                // Re-habilitar después de 5 segundos por si hay error
+                setTimeout(() => {
+                    submitBtn.html(originalText).prop('disabled', false);
+                }, 5000);
+
+                return true;
+            });
+
+            // Función para mostrar alertas
+            function mostrarAlerta(tipo, mensaje) {
+                const alertClass = tipo === 'error' ? 'danger' : tipo === 'warning' ? 'warning' : 'success';
+                const icono = tipo === 'error' ? 'exclamation-circle' :
+                             tipo === 'warning' ? 'exclamation-triangle' : 'check-circle';
+
+                // Remover alertas anteriores
+                $(`.alert-${alertClass}`).alert('close');
+
+                const alerta = $(`
+                    <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-${icono} me-2"></i>
+                            <div>${mensaje}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+
+                $('#formMarca').prepend(alerta);
+
+                // Auto cerrar después de 5 segundos
+                setTimeout(() => {
+                    alerta.alert('close');
+                }, 5000);
+            }
+
+            // Generar nombre de URL amigable automático
+            $('#Nombre').on('blur', function() {
+                const nombre = $(this).val().trim();
+                if (nombre) {
+                    console.log('Nombre ingresado:', nombre);
+
+                    // Sugerir orden basado en tipo seleccionado
+                    const tipo = $('input[name="Tipo"]:checked').val();
+                    if (tipo === 'Personal') {
+                        $('#Orden').val(1);
+                    } else if (tipo === 'Hogar') {
+                        $('#Orden').val(2);
+                    }
+                }
+            });
+                
+                }
+            });
+
+            // Efecto visual en los radios
+            $('.form-check-input').on('change', function() {
+                $('.form-check-input').parent().removeClass('border-primary');
+                $(this).parent().addClass('border-primary border-2 rounded p-2');
+            });
+
+            // Inicializar con estilo
+            $('input[name="Tipo"]:checked').parent().addClass('border-primary border-2 rounded p-2');
+        });
+    </script>
+}

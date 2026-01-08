@@ -31,7 +31,5 @@ namespace VShop.Application.ViewModels.Categoria
         [Range(0, 100, ErrorMessage = "El orden debe estar entre 0 y 100")]
         public int Orden { get; set; } = 0;
 
-        // Para dropdowns
-        public List<CategoriaViewModel> CategoriasPadre { get; set; } = new List<CategoriaViewModel>();
     }
 }

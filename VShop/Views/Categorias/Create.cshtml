@@ -85,40 +85,6 @@
                             <span asp-validation-for="Tipo" class="text-danger small"></span>
                             <small class="form-text text-muted">Selecciona el tipo principal de productos que contendrá esta categoría.</small>
                         </div>
-
-                        <!-- Categoría Padre -->
-                        <div class="form-group mb-3">
-                            <label asp-for="CategoriaPadreId" class="form-label fw-bold"></label>
-                            <select asp-for="CategoriaPadreId" class="form-select form-control-vshop">
-                                <option value="">-- Categoría Principal (sin padre) --</option>
-                                @foreach (var categoria in Model.CategoriasPadre)
-                                {
-                                    <option value="@categoria.Id">@categoria.Nombre (@categoria.Tipo)</option>
-                                }
-                            </select>
-                            <span asp-validation-for="CategoriaPadreId" class="text-danger small"></span>
-                            <small class="form-text text-muted">
-                                Opcional. Selecciona una categoría padre para crear una subcategoría.
-                                @if (!Model.CategoriasPadre.Any())
-                                {
-                                    <span class="text-warning">No hay categorías disponibles para seleccionar como padre.</span>
-                                }
-                            </small>
-                        </div>
-
-                        <!-- Configuraciones Adicionales -->
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Orden" class="form-label fw-bold"></label>
-                                    <input asp-for="Orden" type="number" min="0" max="100"
-                                           class="form-control form-control-vshop" />
-                                    <span asp-validation-for="Orden" class="text-danger small"></span>
-                                    <small class="form-text text-muted">Define el orden de aparición en los menús (0 aparece primero).</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Opciones de Visualización -->
@@ -289,12 +255,6 @@
                     $('#Orden').val(2);
                 }
             });
-
-            // Validar que no se seleccione a sí misma como padre (para edición futura)
-            function validarJerarquia() {
-                // Esta función sería útil en edición
-                // Por ahora solo la dejamos definida
-            }
 
             // Efecto visual en los radios
             $('.form-check-input').on('change', function() {

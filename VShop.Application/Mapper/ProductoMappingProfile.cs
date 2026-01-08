@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using VShop.Application.Dtos.Producto;
-using VShop.Application.ViewModels.Productos;
+using VShop.Application.ViewModels.Producto;
 using VShop.Domain.Entities;
 
 namespace VShop.Application.Mapper

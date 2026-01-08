@@ -1,0 +1,428 @@
+﻿@model ProductoEditViewModel
+@{
+    ViewData["Title"] = "Editar Producto";
+    ViewData["ActivePage"] = "Productos";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" asp-controller="Productos">Productos</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Editar Producto</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Producto
+                    </h1>
+                    <p class="text-muted mb-0">Modifica la información del producto: @Model.Nombre</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row">
+            <!-- Columna izquierda: Información básica -->
+            <div class="col-lg-8">
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="Nombre" class="form-label">Nombre del Producto *</label>
+                                <input asp-for="Nombre" class="form-control form-control-vshop" placeholder="Ej: Camiseta de algodón premium" />
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="SKU" class="form-label">SKU *</label>
+                                <input asp-for="SKU" class="form-control form-control-vshop" placeholder="Ej: PROD-001" />
+                                <span asp-validation-for="SKU" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Descripcion" class="form-label">Descripción</label>
+                                <textarea asp-for="Descripcion" class="form-control form-control-vshop" rows="4"
+                                          placeholder="Describe las características, beneficios y especificaciones del producto"></textarea>
+                                <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="CategoriaId" class="form-label">Categoría *</label>
+                                <select asp-for="CategoriaId" class="form-select form-control-vshop">
+                                    <option value="">Seleccione una categoría</option>
+                                    @foreach (var categoria in Model.Categorias)
+                                    {
+                                        <option value="@categoria.Id">@categoria.Nombre</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoriaId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MarcaId" class="form-label">Marca</label>
+                                <select asp-for="MarcaId" class="form-select form-control-vshop">
+                                    <option value="">Sin marca</option>
+                                    @foreach (var marca in Model.Marcas)
+                                    {
+                                        <option value="@marca.Id">@marca.Nombre</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="MarcaId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Precios -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-tag me-2"></i>Precios y Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="Precio" class="form-label">Precio Regular *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Precio" class="form-control form-control-vshop" type="number" step="0.01" min="0.01" />
+                                </div>
+                                <span asp-validation-for="Precio" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="PrecioDescuento" class="form-label">Precio de Descuento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="PrecioDescuento" class="form-control form-control-vshop" type="number" step="0.01" min="0.01" />
+                                </div>
+                                <span asp-validation-for="PrecioDescuento" class="text-danger small"></span>
+                                <small class="text-muted">Dejar vacío si no hay descuento</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Stock" class="form-label">Stock Disponible *</label>
+                                <input asp-for="Stock" class="form-control form-control-vshop" type="number" min="0" />
+                                <span asp-validation-for="Stock" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="StockMinimo" class="form-label">Stock Mínimo</label>
+                                <input asp-for="StockMinimo" class="form-control form-control-vshop" type="number" min="0" />
+                                <span asp-validation-for="StockMinimo" class="text-danger small"></span>
+                                <small class="text-muted">Se mostrará alerta cuando el stock sea menor a este valor</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-check mt-4 pt-3">
+                                    <input asp-for="EsActivo" class="form-check-input" type="checkbox" />
+                                    <label asp-for="EsActivo" class="form-check-label">Producto Activo</label>
+                                </div>
+                                <span asp-validation-for="EsActivo" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha: Imágenes -->
+            <div class="col-lg-4">
+                <!-- Imágenes existentes -->
+                <div class="card vshop-card mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-images me-2"></i>Imágenes del Producto</h5>
+                        <span class="badge bg-vshop-gradient">@Model.ImagenesExistentes?.Count</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ImagenesExistentes != null && Model.ImagenesExistentes.Any())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Imagen Principal</label>
+                                <div class="row g-2">
+                                    @foreach (var imagen in Model.ImagenesExistentes)
+                                    {
+                                        <div class="col-6">
+                                            <div class="card border @(imagen.EsPrincipal ? "border-primary" : "")">
+                                                <div class="position-relative">
+                                                    <img src="~/@imagen.UrlImagen" class="card-img-top" alt="Imagen producto" style="height: 100px; object-fit: cover;">
+                                                    <div class="position-absolute top-0 end-0 p-1">
+                                                        @if (imagen.EsPrincipal)
+                                                        {
+                                                            <span class="badge bg-primary">Principal</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-outline-primary set-principal"
+                                                                    data-imagen-id="@imagen.Id"
+                                                                    title="Establecer como principal">
+                                                                <i class="fas fa-star"></i>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="card-body p-2 text-center">
+                                                    <small class="d-block">Orden: @imagen.Orden</small>
+                                                    <a href="#" class="btn btn-sm btn-outline-danger btn-delete-image"
+                                                       data-id="@imagen.Id" data-url="@imagen.UrlImagen">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <input type="hidden" asp-for="ImagenPrincipalId" id="imagenPrincipalId" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No hay imágenes para este producto</p>
+                            </div>
+                        }
+
+                        <!-- Subir nuevas imágenes -->
+                        <div class="mb-3">
+                            <label asp-for="Imagenes" class="form-label">Agregar Nuevas Imágenes</label>
+                            <input asp-for="Imagenes" type="file" class="form-control form-control-vshop" multiple
+                                   accept="image/*" />
+                            <span asp-validation-for="Imagenes" class="text-danger small"></span>
+                            <small class="text-muted">Seleccione una o varias imágenes. La primera será la principal por defecto.</small>
+                        </div>
+
+                        <!-- Vista previa de nuevas imágenes -->
+                        <div id="previewContainer" class="d-none">
+                            <label class="form-label">Vista Previa</label>
+                            <div class="row g-2" id="imagePreview"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card vshop-card">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="accion" value="guardar" class="btn btn-vshop btn-lg">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+
+                            <button type="submit" name="accion" value="guardar-y-seguir" class="btn btn-outline-vshop">
+                                <i class="fas fa-sync-alt me-2"></i>Guardar y Continuar Editando
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información del producto -->
+                <div class="card vshop-card mt-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="fas fa-history me-2"></i>Información del Producto</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <strong>ID:</strong> <span class="text-muted">@Model.Id</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong>Estado:</strong>
+                                @if (Model.EsActivo)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </li>
+                            <li class="mb-2">
+                                <strong>Stock Actual:</strong>
+                                @if (Model.Stock == 0)
+                                {
+                                    <span class="badge bg-danger">Agotado</span>
+                                }
+                                else if (Model.Stock <= Model.StockMinimo)
+                                {
+                                    <span class="badge bg-warning text-dark">Stock Bajo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Disponible</span>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal para confirmar eliminación de imagen -->
+<div class="modal fade" id="deleteImageModal" tabindex="-1" aria-labelledby="deleteImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteImageModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Imagen
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta imagen?</p>
+                <p class="text-danger mb-0">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Esta acción no se puede deshacer.
+                    </small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteImageForm" method="post" asp-action="EliminarImagen">
+                    <input type="hidden" id="imageIdToDelete" name="id" />
+                    <button type="submit" class="btn btn-danger">Eliminar Imagen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            // Vista previa de nuevas imágenes
+            $('#Imagenes').change(function() {
+                var previewContainer = $('#previewContainer');
+                var imagePreview = $('#imagePreview');
+                var files = this.files;
+
+                if (files.length > 0) {
+                    previewContainer.removeClass('d-none');
+                    imagePreview.empty();
+
+                    for (var i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        var reader = new FileReader();
+
+                        reader.onload = (function(file) {
+                            return function(e) {
+                                var img = $('<div class="col-6 mb-2">' +
+                                    '<div class="card">' +
+                                    '<img src="~/' + e.target.result + '" class="card-img-top" style="height: 100px; object-fit: cover;">' +
+                                    '<div class="card-body p-2 text-center">' +
+                                    '<small class="d-block text-truncate" title="' + file.name + '">' +
+                                    file.name.substring(0, 15) + (file.name.length > 15 ? '...' : '') +
+                                    '</small>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>');
+                                imagePreview.append(img);
+                            };
+                        })(file);
+
+                        reader.readAsDataURL(file);
+                    }
+                } else {
+                    previewContainer.addClass('d-none');
+                }
+            });
+
+            // Establecer imagen como principal
+            $('.set-principal').click(function(e) {
+                e.preventDefault();
+                var imagenId = $(this).data('imagen-id');
+                $('#imagenPrincipalId').val(imagenId);
+
+                // Actualizar UI
+                $('.card').removeClass('border-primary');
+                $(this).closest('.card').addClass('border-primary');
+
+                // Cambiar botones
+                $('.set-principal').show();
+                $(this).hide();
+                $(this).closest('.position-absolute').html('<span class="badge bg-primary">Principal</span>');
+
+                // Mostrar mensaje de confirmación
+                showToast('success', 'Imagen principal actualizada', 'La imagen ha sido establecida como principal.');
+            });
+
+            // Modal para eliminar imagen
+            $('.btn-delete-image').click(function(e) {
+                e.preventDefault();
+                var imageId = $(this).data('id');
+                var imageUrl = $(this).data('url');
+
+                $('#imageIdToDelete').val(imageId);
+                $('#deleteImageModal').modal('show');
+            });
+
+            // Formatear precios automáticamente
+            $('input[type="number"]').on('input', function() {
+                var value = $(this).val();
+                if (value && !isNaN(value)) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+
+            // Validación en tiempo real del SKU
+            $('#SKU').on('blur', function() {
+                var sku = $(this).val();
+                var id = $('#Id').val();
+
+                if (sku.trim() !== '') {
+                    $.ajax({
+                        url: '@Url.Action("ValidarSku", "Productos")',
+                        type: 'GET',
+                        data: {
+                            sku: sku,
+                            id: id
+                        },
+                        success: function(response) {
+                            if (!response.valido) {
+                                var errorSpan = $('#SKU').next('.text-danger');
+                                if (errorSpan.length === 0) {
+                                    errorSpan = $('<span class="text-danger small"></span>');
+                                    $('#SKU').after(errorSpan);
+                                }
+                                errorSpan.text('Este SKU ya está en uso por otro producto.');
+                            } else {
+                                $('#SKU').next('.text-danger').remove();
+                            }
+                        }
+                    });
+                }
+            });
+
+            
+        });
+    </script>
+}

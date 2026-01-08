@@ -13,7 +13,7 @@ namespace VShop.Application.Mapper
 
             // DTO → Entidad
             CreateMap<MarcaDto, Marca>()
-                .ForMember(dest => dest.Productos, opt => opt.Ignore());
+                .ForMember(dest => dest.Productos, opt => opt.Ignore()).ReverseMap();
 
             // DTO → ViewModel
             CreateMap<MarcaDto, MarcaViewModel>().ReverseMap();

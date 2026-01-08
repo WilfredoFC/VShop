@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VShop.Application.ViewModels.Productos
+namespace VShop.Application.ViewModels.Producto
 {
     public class ProductoFilterViewModel
     {

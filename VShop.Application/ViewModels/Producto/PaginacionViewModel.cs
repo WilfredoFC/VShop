@@ -1,4 +1,4 @@
-﻿namespace VShop.Application.ViewModels.Productos
+﻿namespace VShop.Application.ViewModels.Producto
 {
     public class PaginacionViewModel
     {
