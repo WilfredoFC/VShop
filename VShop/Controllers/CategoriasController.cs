@@ -77,5 +77,91 @@ namespace VShop.Controllers
                 return View(model);
             }
         }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var producto = await _categoriaService.DeleteHardDtoAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        // GET: Productos/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Obtener el producto con sus relaciones
+            var categoria = (await _categoriaService.GetWithInclude([]))
+                .FirstOrDefault(p => p.Id == id);
+
+            if (categoria == null)
+            {
+                return NotFound();
+            }
+
+            // Crear el ViewModel
+            var viewModel = new CategoriaViewModel
+            {
+                Id = categoria.Id,
+                Nombre = categoria.Nombre
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Productos/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CategoriaViewModel model, string accion = null)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            // Verificar si el SKU ya existe, excluyendo el producto actual
+            var categoriaQuery = await _categoriaService.GetWithInclude([]);
+            var nombreExistente = categoriaQuery
+                .Any(p => p.Nombre == model.Nombre && p.Id != model.Id);
+
+            if (nombreExistente)
+            {
+                ModelState.AddModelError("Nombre", "El nombre de esta categoria ya existe. Por favor, ingrese un nombre único.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Obtener el producto actual
+                    var categoria = await _categoriaService.GetDtoById(id);
+                    if (categoria == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Actualizar propiedades
+                    categoria.Nombre = model.Nombre;
+                    categoria.Descripcion = model.Descripcion ?? "";
+                    categoria.FechaActualizacion = DateTime.UtcNow;
+
+                    // Actualizar producto
+                    var result = await _categoriaService.UpdateDtoAsync(categoria, categoria.Id);
+
+                    TempData["SuccessMessage"] = $"Categoria '{categoria.Nombre}' actualizada exitosamente.";
+
+                    // Redireccionar según la acción
+                    if (accion == "guardar-y-seguir")
+                    {
+                        return RedirectToAction(nameof(Edit), new { id = id });
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error al actualizar la categoria: {ex.Message}");
+                }
+            }
+
+            return View(model);
+        }
     }
 }

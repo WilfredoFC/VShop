@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VShop.Persistences.Context;
 
@@ -11,9 +12,11 @@ using VShop.Persistences.Context;
 namespace VShop.Persistences.Migrations
 {
     [DbContext(typeof(VShopContextDb))]
-    partial class VShopContextDbModelSnapshot : ModelSnapshot
+    [Migration("20260109183014_UpdateCategoria")]
+    partial class UpdateCategoria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -344,7 +347,7 @@ namespace VShop.Persistences.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoriaId")
+                    b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
@@ -563,7 +566,8 @@ namespace VShop.Persistences.Migrations
                     b.HasOne("VShop.Domain.Entities.Categoria", "Categoria")
                         .WithMany("Productos")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("VShop.Domain.Entities.Marca", "Marca")
                         .WithMany("Productos")

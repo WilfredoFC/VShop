@@ -13,7 +13,7 @@ namespace VShop.Domain.Entities
         public int StockMinimo { get; set; } = 10;
 
         // Claves foráneas
-        public int CategoriaId { get; set; }
+        public int? CategoriaId { get; set; }
         public int? MarcaId { get; set; }
 
         // Propiedades de navegación
