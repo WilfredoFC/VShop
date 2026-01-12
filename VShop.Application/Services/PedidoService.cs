@@ -8,7 +8,7 @@ namespace VShop.Application.Services
 {
     public class PedidoService : BaseServices<Pedido, PedidoDto>, IPedidoService
     {
-        public PedidoService(IMapper mapper, IBaseRepository<Pedido> _baseRepository) : base(mapper, _baseRepository)
+        public PedidoService(IMapper mapper, IPedidoRepository _baseRepository) : base(mapper, _baseRepository)
         {
         }
     }

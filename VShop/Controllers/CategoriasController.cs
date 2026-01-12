@@ -84,10 +84,10 @@ namespace VShop.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Productos/Edit/5
+        // GET: Categorias/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            // Obtener el producto con sus relaciones
+            // Obtener categoria por id
             var categoria = (await _categoriaService.GetWithInclude([]))
                 .FirstOrDefault(p => p.Id == id);
 
@@ -100,13 +100,16 @@ namespace VShop.Controllers
             var viewModel = new CategoriaViewModel
             {
                 Id = categoria.Id,
-                Nombre = categoria.Nombre
+                Nombre = categoria.Nombre,
+                Descripcion = categoria.Descripcion,
+                FechaCreacion = categoria.FechaCreacion,
+                EsActivo = categoria.EsActivo
             };
 
             return View(viewModel);
         }
 
-        // POST: Productos/Edit/5
+        // POST: Categorias/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CategoriaViewModel model, string accion = null)
@@ -116,7 +119,6 @@ namespace VShop.Controllers
                 return NotFound();
             }
 
-            // Verificar si el SKU ya existe, excluyendo el producto actual
             var categoriaQuery = await _categoriaService.GetWithInclude([]);
             var nombreExistente = categoriaQuery
                 .Any(p => p.Nombre == model.Nombre && p.Id != model.Id);
@@ -130,7 +132,7 @@ namespace VShop.Controllers
             {
                 try
                 {
-                    // Obtener el producto actual
+                    // Obtener la categoria actual
                     var categoria = await _categoriaService.GetDtoById(id);
                     if (categoria == null)
                     {
@@ -141,8 +143,9 @@ namespace VShop.Controllers
                     categoria.Nombre = model.Nombre;
                     categoria.Descripcion = model.Descripcion ?? "";
                     categoria.FechaActualizacion = DateTime.UtcNow;
+                    categoria.EsActivo = model.EsActivo;
 
-                    // Actualizar producto
+                    // Actualizar categoria
                     var result = await _categoriaService.UpdateDtoAsync(categoria, categoria.Id);
 
                     TempData["SuccessMessage"] = $"Categoria '{categoria.Nombre}' actualizada exitosamente.";

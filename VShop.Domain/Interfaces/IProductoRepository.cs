@@ -4,6 +4,6 @@ namespace VShop.Domain.Interfaces
 {
     public interface IProductoRepository : IBaseRepository<Producto>
     {
-
+        Task DesactivarProductosSinStockAsync();
     }
 }

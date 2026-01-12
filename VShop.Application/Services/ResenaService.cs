@@ -8,7 +8,7 @@ namespace VShop.Application.Services
 {
     public class ResenaService : BaseServices<Resena, ResenaDto>, IResenaService
     {
-        public ResenaService(IMapper mapper, IBaseRepository<Resena> _baseRepository) : base(mapper, _baseRepository)
+        public ResenaService(IMapper mapper, IResenaRepository _baseRepository) : base(mapper, _baseRepository)
         {
         }
     }

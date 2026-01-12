@@ -55,7 +55,7 @@ namespace VShop.Persistences.EntitiesConfiguration
             builder.HasOne(p => p.Categoria)
                 .WithMany(c => c.Productos)
                 .HasForeignKey(p => p.CategoriaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(p => p.Marca)
                 .WithMany(m => m.Productos)

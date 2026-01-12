@@ -8,7 +8,7 @@ namespace VShop.Application.Services
 {
     public class CategoriaService : BaseServices<Categoria, CategoriaDto>, ICategoriaService
     {
-        public CategoriaService(IMapper mapper, IBaseRepository<Categoria> _baseRepository) : base(mapper, _baseRepository)
+        public CategoriaService(IMapper mapper, ICategoriaRepository _baseRepository) : base(mapper, _baseRepository)
         {
         }
     }

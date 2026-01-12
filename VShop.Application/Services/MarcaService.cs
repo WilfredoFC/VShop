@@ -8,7 +8,7 @@ namespace VShop.Application.Services
 {
     public class MarcaService : BaseServices<Marca, MarcaDto>, IMarcaService
     {
-        public MarcaService(IMapper mapper, IBaseRepository<Marca> _baseRepository) : base(mapper, _baseRepository)
+        public MarcaService(IMapper mapper, IMarcaRepository _baseRepository) : base(mapper, _baseRepository)
         {
         }
     }

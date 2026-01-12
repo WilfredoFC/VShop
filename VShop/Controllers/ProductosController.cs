@@ -29,6 +29,8 @@ namespace VShop.Controllers
         // GET: Productos
         public async Task<IActionResult> Index(ProductoFilterViewModel filtro, int pagina = 1, int registrosPorPagina = 10)
         {
+            await _productoService.DesactivarProductosSinStockAsync();
+
             // Si el filtro viene nulo, inicializarlo
             filtro ??= new ProductoFilterViewModel
             {
@@ -115,7 +117,7 @@ namespace VShop.Controllers
                     PrecioDescuento = p.PrecioDescuento,
                     SKU = p.SKU,
                     Stock = p.Stock,
-                    Categoria = p.Categoria.Nombre,
+                    Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoria",
                     Marca = p.Marca != null ? p.Marca.Nombre : "Sin marca",
                     ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)?.FirstOrDefault()?.UrlImagen ?? "",
                     EsActivo = p.EsActivo
@@ -294,6 +296,21 @@ namespace VShop.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var producto = await _productoService.DeleteHardDtoAsync(id);
+            if (producto == false)
+            {
+                ModelState.AddModelError("", $"Error al eliminar el producto");
+            }
+            
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> SoftDelete(int id)
+        {
+            var producto = await _productoService.CambiarEstadoProductoAsync(id);
+            if (producto == false)
+            {
+                ModelState.AddModelError("", $"Error al desactivar el producto");
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -560,6 +577,32 @@ namespace VShop.Controllers
             }
         }
 
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarImagen(int id)
+        {
+            var imagen = await _productoImagenService.GetDtoById(id);
+            if (imagen != null)
+            {
+                // Eliminar físicamente el archivo si es necesario
+                if (!string.IsNullOrEmpty(imagen.UrlImagen))
+                {
+                    FileManager.Delete(imagen.UrlImagen, "productos");
+                }
+
+                var resultado = await _productoImagenService.DeleteHardDtoAsync(id);
+
+                if (resultado)
+                {
+                    TempData["SuccessMessage"] = "Imagen eliminada exitosamente.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error al eliminar la imagen.";
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace VShop.Application.Services
 {
     public class InventarioMovimientoService : BaseServices<InventarioMovimiento, InventarioMovimientoDto>, IInventarioMovimientoService
     {
-        public InventarioMovimientoService(IMapper mapper, IBaseRepository<InventarioMovimiento> _baseRepository) : base(mapper, _baseRepository)
+        public InventarioMovimientoService(IMapper mapper, IInventarioMovimientoRepository _baseRepository) : base(mapper, _baseRepository)
         {
         }
     }
