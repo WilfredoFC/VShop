@@ -34,7 +34,7 @@ namespace VShop.Controllers
                     return RedirectToRoute(new { controller = "Admin", action = "Index" });
                 }
 
-                return RedirectToRoute(new { controller = "HomeClient", action = "Index" });
+                return RedirectToRoute(new { controller = "Client", action = "Index" });
 
             }
 
@@ -55,7 +55,7 @@ namespace VShop.Controllers
                     return RedirectToRoute(new { controller = "Admin", action = "Index" });
                 }
 
-                return RedirectToRoute(new { controller = "HomeClient", action = "Index" });
+                return RedirectToRoute(new { controller = "Client", action = "Index" });
             }
 
             if (!ModelState.IsValid)
@@ -78,7 +78,7 @@ namespace VShop.Controllers
                     return RedirectToRoute(new { controller = "Admin", action = "Index" });
                 }
 
-                return RedirectToRoute(new { controller = "HomeClient", action = "Index" });
+                return RedirectToRoute(new { controller = "Client", action = "Index" });
 
             }
             else

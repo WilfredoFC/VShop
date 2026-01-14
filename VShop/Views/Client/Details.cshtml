@@ -1,0 +1,218 @@
+﻿@model ProductoDetalleClienteViewModel
+@{
+    Layout = "_LayoutClient";
+    ViewData["Title"] = Model.Producto.Nombre;
+    ViewData["ActivePage"] = "Catalogo";
+}
+
+<div class="container py-5">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-action="Catalogo" asp-controller="Productos">Catálogo</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-action="Catalogo" asp-controller="Productos"
+                   asp-route-CategoriaId="@Model.Producto.Categoria">@Model.Producto.Categoria</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Producto.Nombre</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Imágenes -->
+        <div class="col-lg-6">
+            <div class="card vshop-card mb-4">
+                <div class="card-body p-0">
+                    @{
+                        var imagenPrincipal = Model.Imagenes.FirstOrDefault(i => i.EsPrincipal)?.UrlImagen
+                        ?? Model.Imagenes.FirstOrDefault()?.UrlImagen
+                        ?? Model.Producto.ImagenPrincipal;
+                    }
+
+                    @if (!string.IsNullOrEmpty(imagenPrincipal))
+                    {
+                        <div class="text-center p-3">
+                            <img id="mainImage" src="~/@imagenPrincipal"
+                                 class="img-fluid rounded"
+                                 alt="@Model.Producto.Nombre"
+                                 style="max-height: 400px; object-fit: contain;">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center p-5">
+                            <i class="fas fa-image fa-5x text-muted mb-3"></i>
+                            <p class="text-muted">Imagen no disponible</p>
+                        </div>
+                    }
+
+                    <!-- Miniaturas -->
+                    @if (Model.Imagenes.Count > 1)
+                    {
+                        <div class="px-3 pb-3">
+                            <div class="row g-2">
+                                @foreach (var imagen in Model.Imagenes)
+                                {
+                                    <div class="col-3">
+                                        <a href="#" class="thumbnail-link" data-image="~/@imagen.UrlImagen">
+                                            <img src="~/@imagen.UrlImagen"
+                                                 class="img-thumbnail @(imagen.EsPrincipal ? "border-primary" : "")"
+                                                 alt="Miniatura"
+                                                 style="height: 80px; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Información -->
+        <div class="col-lg-6">
+            <div class="card vshop-card">
+                <div class="card-body">
+                    <!-- Badges -->
+                    <div class="mb-3">
+                        @if (Model.Producto.TieneDescuento)
+                        {
+                            <span class="badge bg-danger me-2">Oferta</span>
+                        }
+                        <span class="badge @Model.Producto.EstadoStockClase me-2">@Model.Producto.EstadoStock</span>
+                        <span class="badge bg-light text-dark">@Model.Producto.Categoria</span>
+                    </div>
+
+                    <!-- Nombre -->
+                    <h1 class="h2 mb-3">@Model.Producto.Nombre</h1>
+
+                    <!-- SKU -->
+                    <div class="mb-4">
+                        <small class="text-muted">SKU: @Model.Producto.SKU</small>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-4">
+                        <h5 class="mb-2">Descripción</h5>
+                        <p class="text-muted">@Model.Producto.Descripcion</p>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Marca</h6>
+                                <p class="mb-0">@Model.Producto.Marca</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Stock disponible</h6>
+                                <p class="mb-0">
+                                    @if (Model.Producto.Stock > 0)
+                                    {
+                                        <span class="text-success">@Model.Producto.Stock unidades</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">Agotado</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-3 mb-4">
+                        <button class="btn btn-vshop btn-lg flex-fill" @(Model.Producto.Stock <= 0 ? "disabled" : "")>
+                            <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                        </button>
+                        <button class="btn btn-outline-vshop btn-lg" title="Agregar a favoritos">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Compartir -->
+                    <div class="border-top pt-4">
+                        <h6 class="text-muted mb-2">Compartir:</h6>
+                        <div class="d-flex gap-2">
+                            <a href="#" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos relacionados -->
+    @if (Model.ProductosRelacionados.Any())
+    {
+        <div class="mt-5">
+            <h3 class="mb-4">Productos Relacionados</h3>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                @foreach (var producto in Model.ProductosRelacionados)
+                {
+                    <div class="col">
+                        <div class="card h-100 vshop-card hover-shadow">
+                            @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                            {
+                                <img src="~/@producto.ImagenPrincipal"
+                                     class="card-img-top"
+                                     alt="@producto.Nombre"
+                                     style="height: 200px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                     style="height: 200px;">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <a asp-action="Details" asp-route-id="@producto.Id"
+                                       class="text-decoration-none text-dark">
+                                        @producto.Nombre
+                                    </a>
+                                </h6>
+                                <span class="badge @producto.EstadoStockClase small">@producto.EstadoStock</span>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <a asp-action="Detalle" asp-route-id="@producto.Id"
+                                   class="btn btn-outline-vshop btn-sm w-100">
+                                    Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Cambiar imagen principal al hacer clic en miniatura
+            $('.thumbnail-link').click(function(e) {
+                e.preventDefault();
+                var imageUrl = $(this).data('image');
+                $('#mainImage').attr('src', imageUrl);
+
+                $('.thumbnail-link img').removeClass('border-primary');
+                $(this).find('img').addClass('border-primary');
+            });
+        });
+    </script>
+}
