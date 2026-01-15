@@ -95,7 +95,7 @@ namespace VShop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _accountServiceForWebApp.SignOutAsync();
-            return RedirectToRoute(new { controller = "Login", action = "Index" });
+            return RedirectToRoute(new { controller = "Client", action = "Index" });
         }
         public IActionResult Register()
         {

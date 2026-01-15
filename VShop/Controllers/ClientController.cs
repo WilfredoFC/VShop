@@ -95,24 +95,24 @@ namespace VShop.Controllers
             var totalPaginas = (int)Math.Ceiling((double)totalRegistros / registrosPorPagina);
 
             var productos = productosQuery
-                .Skip((pagina - 1) * registrosPorPagina)
-                .Take(registrosPorPagina)
-                .Select(p => new ProductoViewModel
-                {
-                    Id = p.Id,
-                    Nombre = p.Nombre,
-                    Descripcion = p.Descripcion,
-                    Precio = p.Precio,
-                    PrecioDescuento = p.PrecioDescuento,
-                    SKU = p.SKU,
-                    Stock = p.Stock,
-                    Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría",
-                    Marca = p.Marca != null ? p.Marca.Nombre : "Sin marca",
-                    ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
-                                             .FirstOrDefault()?.UrlImagen ?? "",
-                    EsActivo = p.EsActivo
-                })
-                .ToList();
+                            .Skip((pagina - 1) * registrosPorPagina)
+                            .Take(registrosPorPagina)
+                            .Select(p => new ProductoViewModel
+                            {
+                                Id = p.Id,
+                                Nombre = p.Nombre,
+                                Descripcion = p.Descripcion,
+                                Precio = p.Precio,
+                                PrecioDescuento = p.PrecioDescuento,
+                                SKU = p.SKU, // Mantenemos el SKU en el modelo pero no lo mostramos en la vista
+                                Stock = p.Stock,
+                                Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría",
+                                Marca = p.Marca != null ? p.Marca.Nombre : "Sin marca",
+                                ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
+                                                         .FirstOrDefault()?.UrlImagen ?? "",
+                                EsActivo = p.EsActivo
+                            })
+                            .ToList();
 
             // Obtener categorías y marcas para los filtros (solo activas)
             var categoriasQuery = await _categoriaService.GetWithInclude([]);

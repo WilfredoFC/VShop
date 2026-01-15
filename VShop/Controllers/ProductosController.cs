@@ -1,16 +1,18 @@
-﻿using VShop.Helpers;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VShop.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using VShop.Application.Dtos.Producto;
+using VShop.Application.Dtos.ProductoImagen;
+using VShop.Application.Interfaces;
+using VShop.Application.ViewModels.Categoria;
 using VShop.Application.ViewModels.Marca;
 using VShop.Application.ViewModels.Producto;
-using VShop.Application.Dtos.ProductoImagen;
-using VShop.Application.ViewModels.Categoria;
 using VShop.Application.ViewModels.ProductoImagen;
+using VShop.Helpers;
 
 namespace VShop.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProductosController : Controller
     {
         private readonly IMarcaService _marcaService;

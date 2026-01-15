@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VShop.Application.Dtos.Categoria;
 using VShop.Application.Interfaces;
 using VShop.Application.ViewModels.Categoria;
 
 namespace VShop.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriasController : Controller
     {
         private readonly ICategoriaService _categoriaService;

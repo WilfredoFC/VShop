@@ -310,3 +310,163 @@ $(document).on('click', '.btn-increase', function () {
 $('#cartOffcanvas').on('show.bs.offcanvas', function () {
     cart.renderCart();
 });
+
+// Formatear precios automáticamente
+function formatPrice(price) {
+    return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(price);
+}
+
+// Aplicar formato a todos los precios en la página
+$(document).ready(function () {
+    // Función para formatear elementos con precios
+    function formatAllPrices() {
+        $('.product-price').each(function () {
+            var $priceContainer = $(this);
+
+            // Buscar elementos con precios
+            $priceContainer.find('span').each(function () {
+                var text = $(this).text().trim();
+                var priceMatch = text.match(/(\d+\.?\d*)/);
+
+                if (priceMatch) {
+                    var price = parseFloat(priceMatch[1]);
+                    var formattedPrice = formatPrice(price);
+                    $(this).text(text.replace(priceMatch[0], formattedPrice));
+                }
+            });
+        });
+    }
+
+    // Aplicar formato inicial
+    formatAllPrices();
+
+    // Actualizar precios en tiempo real si hay cambios
+    $(document).on('DOMNodeInserted', function (e) {
+        if ($(e.target).hasClass('product-price') ||
+            $(e.target).find('.product-price').length) {
+            setTimeout(formatAllPrices, 100);
+        }
+    });
+
+    // Mejorar la visualización de los precios con descuento
+    $('.product-price').each(function () {
+        var $this = $(this);
+
+        // Agregar clase especial a precios con descuento
+        if ($this.find('.text-danger').length > 0) {
+            $this.addClass('price-discount');
+        }
+    });
+
+    // Mostrar tooltip con información de ahorro
+    $('.price-discount').hover(
+        function () {
+            var $container = $(this);
+            var regularPrice = $container.find('.text-decoration-line-through').text();
+            var discountPrice = $container.find('.text-danger').text();
+
+            // Extraer valores numéricos
+            var regular = parseFloat(regularPrice.replace(/[^0-9.-]+/g, ""));
+            var discount = parseFloat(discountPrice.replace(/[^0-9.-]+/g, ""));
+
+            if (!isNaN(regular) && !isNaN(discount)) {
+                var savings = regular - discount;
+                var percentage = Math.round((savings / regular) * 100);
+
+                // Crear tooltip personalizado
+                $container.attr('title', `Ahorras ${formatPrice(savings)} (${percentage}% de descuento)`);
+
+                // Inicializar tooltip de Bootstrap
+                new bootstrap.Tooltip($container[0]);
+            }
+        },
+        function () {
+            // Eliminar tooltip al salir
+            $(this).tooltip('dispose');
+        }
+    );
+
+    // Efecto especial al agregar al carrito
+    $('.btn-add-to-cart').click(function (e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var productId = $button.data('product-id');
+        var productName = $button.data('product-name');
+        var productPrice = $button.data('product-price');
+        var productImage = $button.data('product-image');
+
+        // Efecto visual
+        $button.addClass('adding');
+        $button.html('<i class="fas fa-spinner fa-spin me-2"></i>Agregando...');
+
+        // Simular proceso de agregar al carrito
+        setTimeout(function () {
+            // Agregar al carrito
+            const added = cart.addItem({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                image: productImage,
+                quantity: 1
+            });
+
+            if (added) {
+                // Efecto de confirmación
+                $button.removeClass('adding').addClass('added');
+                $button.html('<i class="fas fa-check me-2"></i>¡Agregado!');
+
+                // Mostrar notificación
+                showNotification('success', 'Carrito', `"${productName}" agregado al carrito`);
+
+                // Restaurar botón después de 2 segundos
+                setTimeout(function () {
+                    $button.removeClass('added');
+                    $button.html('<i class="fas fa-cart-plus me-2"></i>Agregar al Carrito');
+                }, 2000);
+
+                // Renderizar carrito si está abierto
+                if ($('#cartOffcanvas').hasClass('show')) {
+                    cart.renderCart();
+                }
+            }
+        }, 800);
+    });
+
+    // Funcionalidad para compartir
+    $('.btn-share').click(function (e) {
+        e.preventDefault();
+        var social = $(this).data('social');
+        var url = window.location.href;
+        var title = $('h1').text();
+
+        var shareUrls = {
+            facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+            twitter: 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title),
+            whatsapp: 'https://wa.me/?text=' + encodeURIComponent(title + ' - ' + url)
+        };
+
+        if (shareUrls[social]) {
+            window.open(shareUrls[social], '_blank', 'width=600,height=400');
+        }
+    });
+
+    // Actualizar estado de stock visualmente
+    $('.badge.bg-success, .badge.bg-warning, .badge.bg-danger').each(function () {
+        var $badge = $(this);
+        var text = $badge.text().toLowerCase();
+
+        if (text.includes('disponible') || text.includes('disponible')) {
+            $badge.addClass('stock-available');
+        } else if (text.includes('bajo') || text.includes('low')) {
+            $badge.addClass('stock-low');
+        } else if (text.includes('agotado') || text.includes('out')) {
+            $badge.addClass('stock-out');
+        }
+    });
+});

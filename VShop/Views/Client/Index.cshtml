@@ -32,21 +32,21 @@
         <div class="row">
             <!-- Sidebar de filtros -->
             <div class="col-lg-3 mb-4">
-                <div class="card vshop-card sticky-top" style="top: 20px;">
-                    <div class="card-header bg-vshop text-white">
+                <div class="card vshop-card sticky-top" style="top: 150px;">
+                    <div class="card-header bg-primary text-white">
                         <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros</h5>
                     </div>
                     <div class="card-body">
                         <form asp-action="Catalogo" method="get">
                             <!-- Buscador -->
                             <div class="mb-3">
-                                <label asp-for="Filtro.Busqueda" class="form-label"></label>
+                                <label asp-for="Filtro.Busqueda" class="form-label text-dark">Buscar</label>
                                 <input asp-for="Filtro.Busqueda" class="form-control" placeholder="Nombre, descripción...">
                             </div>
 
                             <!-- Categoría -->
                             <div class="mb-3">
-                                <label asp-for="Filtro.CategoriaId" class="form-label"></label>
+                                <label asp-for="Filtro.CategoriaId" class="form-label text-dark">Categoría</label>
                                 <select asp-for="Filtro.CategoriaId" class="form-select">
                                     <option value="">Todas las categorías</option>
                                     @foreach (var categoria in Model.Categorias)
@@ -60,7 +60,7 @@
 
                             <!-- Marca -->
                             <div class="mb-3">
-                                <label asp-for="Filtro.MarcaId" class="form-label"></label>
+                                <label asp-for="Filtro.MarcaId" class="form-label text-dark">Marca</label>
                                 <select asp-for="Filtro.MarcaId" class="form-select">
                                     <option value="">Todas las marcas</option>
                                     @foreach (var marca in Model.Marcas)
@@ -73,19 +73,19 @@
                             </div>
 
                             <!-- Estado Stock -->
-                            <div class="mb-3">
-                                <label asp-for="Filtro.EstadoStock" class="form-label"></label>
+                            @* <div class="mb-3">
+                                <label asp-for="Filtro.EstadoStock" class="form-label text-dark">Estado Stock</label>
                                 <select asp-for="Filtro.EstadoStock" class="form-select">
                                     <option value="todos">Todos los estados</option>
                                     <option value="disponible" selected="@(Model.Filtro.EstadoStock == "disponible")">Disponible</option>
                                     <option value="bajo" selected="@(Model.Filtro.EstadoStock == "bajo")">Stock Bajo</option>
                                     <option value="agotado" selected="@(Model.Filtro.EstadoStock == "agotado")">Agotado</option>
                                 </select>
-                            </div>
+                            </div> *@
 
                             <!-- Ordenar por -->
                             <div class="mb-3">
-                                <label asp-for="Filtro.OrdenarPor" class="form-label"></label>
+                                <label asp-for="Filtro.OrdenarPor" class="form-label text-dark">Ordenar por</label>
                                 <select asp-for="Filtro.OrdenarPor" class="form-select">
                                     <option value="nombre" selected="@(Model.Filtro.OrdenarPor == "nombre")">Nombre (A-Z)</option>
                                     <option value="reciente" selected="@(Model.Filtro.OrdenarPor == "reciente")">Más recientes</option>
@@ -97,11 +97,11 @@
                             <!-- Solo con descuento -->
                             <div class="mb-3 form-check">
                                 <input asp-for="Filtro.SoloConDescuento" class="form-check-input" />
-                                <label asp-for="Filtro.SoloConDescuento" class="form-check-label"></label>
+                                <label asp-for="Filtro.SoloConDescuento" class="form-check-label text-dark">Solo productos con descuento</label>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-vshop">
+                                <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-filter me-2"></i>Aplicar Filtros
                                 </button>
                                 <a asp-action="Catalogo" class="btn btn-outline-secondary">
@@ -175,15 +175,14 @@
                                                    class="btn btn-vshop btn-sm">
                                                     <i class="fas fa-eye me-1"></i>Ver Detalles
                                                 </a>
-                                                <button class="btn btn-outline-vshop btn-sm"
+                                                @* <button class="btn btn-outline-vshop btn-sm"
                                                         title="Agregar a favoritos">
                                                     <i class="far fa-heart"></i>
-                                                </button>
+                                                </button> *@
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Contenido -->
                                     <div class="card-body">
                                         <div class="mb-2">
                                             @if (!string.IsNullOrEmpty(producto.Marca) && producto.Marca != "Sin marca")
@@ -200,6 +199,28 @@
                                             </a>
                                         </h5>
 
+                                        <!-- SECCIÓN DE PRECIOS - AGREGADA -->
+                                        <div class="product-price mt-2 mb-3">
+                                            @if (producto.TieneDescuento && producto.PrecioDescuento.HasValue)
+                                            {
+                                                <div class="d-flex align-items-center">
+                                                    <span class="text-danger fw-bold fs-5 me-2">
+                                                        @producto.PrecioDescuento.Value
+                                                    </span>
+                                                    <span class="text-muted text-decoration-line-through small">
+                                                        @producto.Precio
+                                                    </span>
+                                                    <span class="badge bg-danger ms-2">
+                                                        @(((producto.Precio - producto.PrecioDescuento.Value) / producto.Precio * 100).ToString("0"))% OFF
+                                                    </span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold fs-5">@producto.Precio</span>
+                                            }
+                                        </div>
+
                                         <p class="card-text text-muted small">
                                             @if (producto.Descripcion?.Length > 100)
                                             {
@@ -213,9 +234,10 @@
                                             }
                                         </p>
 
-                                        <div class="mt-3">
-                                            <small class="text-muted">SKU: @producto.SKU</small>
-                                        </div>
+                                        <!-- OCULTAMOS EL SKU (Comentado) -->
+                                        @* <div class="mt-3">
+        <small class="text-muted">SKU: @producto.SKU</small>
+    </div> *@
                                     </div>
                                 </div>
                             </div>
@@ -262,7 +284,31 @@
                                             <span class="badge bg-light text-dark small me-1">@producto.Categoria</span>
                                             <span class="badge @producto.EstadoStockClase small">@producto.EstadoStock</span>
                                         </div>
-                                        <small class="text-muted">SKU: @producto.SKU</small>
+
+                                        <!-- SECCIÓN DE PRECIOS - AGREGADA -->
+                                        <div class="product-price mt-2">
+                                            @if (producto.TieneDescuento && producto.PrecioDescuento.HasValue)
+                                            {
+                                                <div class="d-flex align-items-center">
+                                                    <span class="text-danger fw-bold me-2">
+                                                        @producto.PrecioDescuento.Value
+                                                    </span>
+                                                    <span class="text-muted text-decoration-line-through small">
+                                                        @producto.Precio
+                                                    </span>
+                                                    <span class="badge bg-danger ms-2">
+                                                        @(((producto.Precio - producto.PrecioDescuento.Value) / producto.Precio * 100).ToString("0"))% OFF
+                                                    </span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold">@producto.Precio</span>
+                                            }
+                                        </div>
+
+                                        <!-- OCULTAMOS EL SKU -->
+                                        @* <small class="text-muted">SKU: @producto.SKU</small> *@
                                     </div>
                                     <div class="col-md-3 text-end">
                                         <a asp-action="Details" asp-route-id="@producto.Id"

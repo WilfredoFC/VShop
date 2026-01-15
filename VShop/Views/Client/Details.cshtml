@@ -52,15 +52,18 @@
                     @if (Model.Imagenes.Count > 1)
                     {
                         <div class="px-3 pb-3">
-                            <div class="row g-2">
-                                @foreach (var imagen in Model.Imagenes)
+                            <div class="row g-2" id="thumbnailsContainer">
+                                @foreach (var imagen in Model.Imagenes.Select((value, index) => new { value, index }))
                                 {
                                     <div class="col-3">
-                                        <a href="#" class="thumbnail-link" data-image="~/@imagen.UrlImagen">
-                                            <img src="~/@imagen.UrlImagen"
-                                                 class="img-thumbnail @(imagen.EsPrincipal ? "border-primary" : "")"
-                                                 alt="Miniatura"
-                                                 style="height: 80px; object-fit: cover;">
+                                        <a href="#" class="thumbnail-link d-block"
+                                           data-image="@Url.Content("~/" + imagen.value.UrlImagen)"
+                                           data-index="@imagen.index">
+                                            <img src="@Url.Content("~/" + imagen.value.UrlImagen)"
+                                                 class="img-thumbnail @(imagen.value.EsPrincipal ? "border-primary" : "")"
+                                                 alt="Miniatura @(imagen.index + 1)"
+                                                 style="height: 80px; object-fit: cover;"
+                                                 onerror="this.src='@Url.Content("~/images/placeholder.jpg")'">
                                         </a>
                                     </div>
                                 }
@@ -88,9 +91,32 @@
                     <!-- Nombre -->
                     <h1 class="h2 mb-3">@Model.Producto.Nombre</h1>
 
-                    <!-- SKU -->
-                    <div class="mb-4">
-                        <small class="text-muted">SKU: @Model.Producto.SKU</small>
+                    <!-- SECCIÓN DE PRECIOS - AGREGADA Y MEJORADA -->
+                    <div class="mb-4 py-3 px-4 bg-light rounded">
+                        @if (Model.Producto.TieneDescuento && Model.Producto.PrecioDescuento.HasValue)
+                        {
+                            <div class="mb-2">
+                                <span class="text-muted text-decoration-line-through fs-4">
+                                    @Model.Producto.Precio.ToString("C")
+                                </span>
+                                <span class="badge bg-danger ms-2 fs-6">
+                                    @(((Model.Producto.Precio - Model.Producto.PrecioDescuento.Value) / Model.Producto.Precio * 100).ToString("0"))% OFF
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="text-danger fw-bold fs-1">
+                                    @Model.Producto.PrecioDescuento.Value.ToString("C")
+                                </span>
+                                <span class="ms-3 text-success">
+                                    <i class="fas fa-money-bill-wave me-1"></i>
+                                    Ahorras @((Model.Producto.Precio - Model.Producto.PrecioDescuento.Value).ToString("C"))
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="fw-bold fs-1">@Model.Producto.Precio.ToString("C")</span>
+                        }
                     </div>
 
                     <!-- Descripción -->
@@ -99,7 +125,7 @@
                         <p class="text-muted">@Model.Producto.Descripcion</p>
                     </div>
 
-                    <!-- Información adicional -->
+                    <!-- Información adicional - OCULTAMOS SKU -->
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -109,43 +135,64 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <h6 class="text-muted mb-1">Stock disponible</h6>
+                                <h6 class="text-muted mb-1">Disponibilidad</h6>
                                 <p class="mb-0">
                                     @if (Model.Producto.Stock > 0)
                                     {
-                                        <span class="text-success">@Model.Producto.Stock unidades</span>
+                                        <span class="text-success">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            @Model.Producto.Stock unidades disponibles
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="text-danger">Agotado</span>
+                                        <span class="text-danger">
+                                            <i class="fas fa-times-circle me-1"></i>
+                                            Agotado
+                                        </span>
                                     }
                                 </p>
                             </div>
                         </div>
+
+                        <!-- Ocultamos la sección del SKU -->
+                        @* <div class="col-12">
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">SKU</h6>
+                        <p class="mb-0">@Model.Producto.SKU</p>
+                    </div>
+                </div> *@
                     </div>
 
-                    <!-- Botones -->
-                    <div class="d-flex gap-3 mb-4">
-                        <button class="btn btn-vshop btn-lg flex-fill" @(Model.Producto.Stock <= 0 ? "disabled" : "")>
-                            <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
-                        </button>
-                        <button class="btn btn-outline-vshop btn-lg" title="Agregar a favoritos">
+                    <!-- Botones de acción mejorados -->
+                    @* <div class="d-flex gap-3 mb-4">
+                        @if (Model.Producto.Stock > 0)
+                        {
+                            <button class="btn btn-vshop btn-lg flex-fill btn-add-to-cart"
+                                    data-product-id="@Model.Producto.Id"
+                                    data-product-name="@Model.Producto.Nombre"
+                                    data-product-price="@Model.Producto.PrecioFinal"
+                                    data-product-image="@(Model.Imagenes.FirstOrDefault()?.UrlImagen ?? Model.Producto.ImagenPrincipal)">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg flex-fill" disabled>
+                                <i class="fas fa-times-circle me-2"></i>Producto Agotado
+                            </button>
+                        }
+                        <button class="btn btn-outline-vshop btn-lg btn-wishlist"
+                                data-product-id="@Model.Producto.Id"
+                                title="Agregar a favoritos">
                             <i class="far fa-heart"></i>
                         </button>
-                    </div>
-
+                    </div> *@
                     <!-- Compartir -->
                     <div class="border-top pt-4">
                         <h6 class="text-muted mb-2">Compartir:</h6>
                         <div class="d-flex gap-2">
-                            <a href="#" class="btn btn-outline-secondary btn-sm">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" class="btn btn-outline-secondary btn-sm">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" class="btn btn-outline-secondary btn-sm">
-                                <i class="fab fa-whatsapp"></i>
+                            <a href="#" class="btn btn-outline-secondary btn-sm btn-share" data-social="#"> <i class="fa-solid fa-link"></i>
                             </a>
                         </div>
                     </div>
@@ -204,15 +251,95 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
+            // Variable para rastrear la imagen actual
+            var currentImageIndex = 0;
+            var allImages = [];
+
+            // Inicializar el array de imágenes
+            function initializeImages() {
+                allImages = [];
+                $('.thumbnail-link').each(function(index) {
+                    var imageUrl = $(this).data('image');
+                    allImages.push({
+                        element: $(this),
+                        url: imageUrl,
+                        index: index
+                    });
+
+                    // Marcar la imagen principal inicial
+                    if ($(this).find('img').hasClass('border-primary')) {
+                        currentImageIndex = index;
+                    }
+                });
+            }
+
+            // Función para cambiar imagen principal
+            function changeMainImage(imageUrl, thumbnailElement) {
+                $('#mainImage').fadeOut(200, function() {
+                    $(this).attr('src', imageUrl).fadeIn(200);
+                });
+
+                // Actualizar miniaturas
+                $('.thumbnail-link img').removeClass('border-primary');
+                thumbnailElement.find('img').addClass('border-primary');
+
+                // Actualizar índice actual
+                currentImageIndex = thumbnailElement.data('index') || 0;
+            }
+
+            // Inicializar imágenes
+            initializeImages();
+
             // Cambiar imagen principal al hacer clic en miniatura
-            $('.thumbnail-link').click(function(e) {
+            $(document).on('click', '.thumbnail-link', function(e) {
                 e.preventDefault();
                 var imageUrl = $(this).data('image');
-                $('#mainImage').attr('src', imageUrl);
-
-                $('.thumbnail-link img').removeClass('border-primary');
-                $(this).find('img').addClass('border-primary');
+                changeMainImage(imageUrl, $(this));
             });
+
+            // Navegación con flechas del teclado
+            $(document).keydown(function(e) {
+                if (allImages.length === 0) return;
+
+                switch(e.keyCode) {
+                    case 37: // Flecha izquierda
+                        e.preventDefault();
+                        var prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
+                        var prevImage = allImages[prevIndex];
+                        changeMainImage(prevImage.url, prevImage.element);
+                        break;
+
+                    case 39: // Flecha derecha
+                        e.preventDefault();
+                        var nextIndex = (currentImageIndex + 1) % allImages.length;
+                        var nextImage = allImages[nextIndex];
+                        changeMainImage(nextImage.url, nextImage.element);
+                        break;
+                }
+            });
+
+            // Prevenir que el clic en la imagen principal cause problemas
+            $('#mainImage').click(function(e) {
+                e.stopPropagation();
+            });
+
+            // Manejar errores de carga de imágenes
+            $('#mainImage').on('error', function() {
+                console.log('Error cargando la imagen');
+                $(this).attr('src', '/images/placeholder.jpg');
+                $(this).attr('alt', 'Imagen no disponible');
+            });
+
+            // Cargar todas las imágenes en caché para mejor experiencia
+            function preloadImages() {
+                allImages.forEach(function(image) {
+                    var img = new Image();
+                    img.src = image.url;
+                });
+            }
+
+            // Pre-cargar imágenes después de que todo esté listo
+            setTimeout(preloadImages, 1000);
         });
     </script>
 }
