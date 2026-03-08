@@ -12,7 +12,7 @@ using VShop.Persistences.Context;
 namespace VShop.Persistences.Migrations
 {
     [DbContext(typeof(VShopContextDb))]
-    [Migration("20260106160328_InitialMigration")]
+    [Migration("20260116000006_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -347,7 +347,7 @@ namespace VShop.Persistences.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoriaId")
+                    b.Property<int?>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
@@ -566,8 +566,7 @@ namespace VShop.Persistences.Migrations
                     b.HasOne("VShop.Domain.Entities.Categoria", "Categoria")
                         .WithMany("Productos")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("VShop.Domain.Entities.Marca", "Marca")
                         .WithMany("Productos")

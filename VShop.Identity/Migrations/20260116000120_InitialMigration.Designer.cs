@@ -12,7 +12,7 @@ using VShop.Identity.Context;
 namespace VShop.Identity.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20260106154058_InitialMigration")]
+    [Migration("20260116000120_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />

@@ -6,7 +6,7 @@ using VShop.Application.ViewModels.Categoria;
 
 namespace VShop.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrador")]
     public class CategoriasController : Controller
     {
         private readonly ICategoriaService _categoriaService;

@@ -12,7 +12,7 @@ using VShop.Helpers;
 
 namespace VShop.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrador")]
     public class ProductosController : Controller
     {
         private readonly IMarcaService _marcaService;

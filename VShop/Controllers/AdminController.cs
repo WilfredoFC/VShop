@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace VShop.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrador")]
     public class AdminController : Controller
     {
         public IActionResult Index()

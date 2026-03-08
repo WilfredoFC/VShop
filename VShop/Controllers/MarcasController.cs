@@ -7,7 +7,7 @@ using VShop.Application.ViewModels.Marca;
 
 namespace VShop.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrador")]
     public class MarcasController : Controller
     {
         private readonly IMarcaService _marcaService;

@@ -88,7 +88,7 @@ namespace VShop.Persistences.Migrations
                     SKU = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     StockMinimo = table.Column<int>(type: "int", nullable: false, defaultValue: 10),
-                    CategoriaId = table.Column<int>(type: "int", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: true),
                     MarcaId = table.Column<int>(type: "int", nullable: true),
                     FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     FechaActualizacion = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -102,7 +102,7 @@ namespace VShop.Persistences.Migrations
                         column: x => x.CategoriaId,
                         principalTable: "Categorias",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Productos_Marcas_MarcaId",
                         column: x => x.MarcaId,
