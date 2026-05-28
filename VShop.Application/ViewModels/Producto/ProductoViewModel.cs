@@ -11,7 +11,7 @@
         public int Stock { get; set; }
         public string Categoria { get; set; }
         public string Marca { get; set; }
-        public string ImagenPrincipal { get; set; }
+        public int? ImagenPrincipalId { get; set; }
         public bool EsActivo { get; set; }
         public bool TieneDescuento => PrecioDescuento.HasValue && PrecioDescuento < Precio;
         public decimal PrecioFinal => TieneDescuento ? PrecioDescuento.Value : Precio;

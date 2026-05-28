@@ -8,7 +8,6 @@ using VShop.Application.ViewModels.Categoria;
 using VShop.Application.ViewModels.Marca;
 using VShop.Application.ViewModels.Producto;
 using VShop.Application.ViewModels.ProductoImagen;
-using VShop.Helpers;
 
 namespace VShop.Controllers
 {
@@ -42,7 +41,7 @@ namespace VShop.Controllers
             };
 
             // Consulta base
-            var productosQuery = await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagen"]);
+            var productosQuery = await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]);
             var imgQuery = await _productoImagenService.GetWithInclude([]);
 
             // Aplicar filtros
@@ -121,7 +120,7 @@ namespace VShop.Controllers
                     Stock = p.Stock,
                     Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoria",
                     Marca = p.Marca != null ? p.Marca.Nombre : "Sin marca",
-                    ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)?.FirstOrDefault()?.UrlImagen ?? "",
+                    ImagenPrincipalId = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)?.FirstOrDefault()?.Id,
                     EsActivo = p.EsActivo
                 })
                 .ToList();
@@ -161,7 +160,7 @@ namespace VShop.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var categoriasQuery = await _categoriaService.GetWithInclude(["Categorias", "Marcas", "Imagen"]);
+            var categoriasQuery = await _categoriaService.GetWithInclude([]);
 
             var categorias = categoriasQuery
                 .Where(c => c.EsActivo)
@@ -276,12 +275,14 @@ namespace VShop.Controllers
             {
                 if (imagen.Length > 0)
                 {
-                    var filename = FileManager.Upload(imagen, productoId.ToString(), "productos", isEditing);
+                    using var ms = new MemoryStream();
+                    await imagen.CopyToAsync(ms);
 
                     var productoImagen = new ProductoImagenDto
                     {
                         ProductoId = productoId,
-                        UrlImagen = filename ?? "",
+                        Datos = ms.ToArray(),
+                        TipoContenido = imagen.ContentType,
                         EsPrincipal = orden == 1,
                         Orden = orden,
                         FechaCreacion = DateTime.UtcNow,
@@ -320,7 +321,7 @@ namespace VShop.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             // Obtener el producto con sus relaciones
-            var producto = (await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagenes"]))
+            var producto = (await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]))
                 .FirstOrDefault(p => p.Id == id);
 
             if (producto == null)
@@ -363,7 +364,6 @@ namespace VShop.Controllers
                 ImagenesExistentes = imagenesExistentes.Select(im => new ProductoImagenViewModel
                 {
                     Id = im.Id,
-                    UrlImagen = im.UrlImagen,
                     EsPrincipal = im.EsPrincipal,
                     Orden = im.Orden,
                     EsActivo = im.EsActivo
@@ -469,7 +469,6 @@ namespace VShop.Controllers
             model.ImagenesExistentes = imagenesExistentes.Select(im => new ProductoImagenViewModel
             {
                 Id = im.Id,
-                UrlImagen = im.UrlImagen,
                 EsPrincipal = im.EsPrincipal,
                 Orden = im.Orden,
                 EsActivo = im.EsActivo
@@ -482,7 +481,7 @@ namespace VShop.Controllers
         public async Task<IActionResult> Details(int id)
         {
             // Obtener el producto con sus relaciones
-            var producto = (await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagenes"]))
+            var producto = (await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]))
                 .FirstOrDefault(p => p.Id == id);
 
             if (producto == null)
@@ -544,7 +543,6 @@ namespace VShop.Controllers
                 Imagenes = imagenes.Select(im => new ProductoImagenViewModel
                 {
                     Id = im.Id,
-                    UrlImagen = im.UrlImagen,
                     EsPrincipal = im.EsPrincipal,
                     Orden = im.Orden,
                     EsActivo = im.EsActivo
@@ -586,12 +584,6 @@ namespace VShop.Controllers
             var imagen = await _productoImagenService.GetDtoById(id);
             if (imagen != null)
             {
-                // Eliminar físicamente el archivo si es necesario
-                if (!string.IsNullOrEmpty(imagen.UrlImagen))
-                {
-                    FileManager.Delete(imagen.UrlImagen, "productos");
-                }
-
                 var resultado = await _productoImagenService.DeleteHardDtoAsync(id);
 
                 if (resultado)

@@ -16,6 +16,12 @@ namespace VShop.Domain.Entities
         public string Ciudad { get; set; }
         public string TelefonoContacto { get; set; }
         public string Notas { get; set; }
+        public string AzulToken { get; set; }
+        public string AzulAuthorizationCode { get; set; }
+        public string AzulResponseCode { get; set; }
+        public string AzulIsoCode { get; set; }
+        public string AzulErrorDescripcion { get; set; }
+        public DateTime? FechaPago { get; set; }
 
         // Propiedades de navegación
         public virtual ICollection<PedidoDetalle> Detalles { get; set; }

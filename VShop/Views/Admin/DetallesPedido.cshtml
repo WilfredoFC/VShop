@@ -1,0 +1,222 @@
+@model VShop.Application.Dtos.Pedido.PedidoDto
+
+@{
+    ViewData["Title"] = "Detalles del Pedido";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Detalles del Pedido #@Model.NumeroPedido</h1>
+        <a href="/Admin/Pedidos" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información general -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Información del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Número de Pedido:</strong> @Model.NumeroPedido</p>
+                            <p><strong>ID Usuario:</strong> @Model.UsuarioId</p>
+                            <p><strong>Fecha:</strong> @Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</p>
+                            <p><strong>Método de Pago:</strong> @Model.MetodoPago</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Estado:</strong>
+                                @{
+                                    var badgeClass = Model.Estado switch
+                                    {
+                                        "Pendiente" => "warning",
+                                        "Confirmado" => "info",
+                                        "EnProceso" => "primary",
+                                        "Enviado" => "success",
+                                        "Entregado" => "success",
+                                        "Cancelado" => "danger",
+                                        _ => "secondary"
+                                    };
+                                }
+                                <span class="badge bg-@badgeClass" style="font-size: 0.95em;">@Model.Estado</span>
+                            </p>
+                            @* DESHABILITADO: Fecha de pago - Campo de Azul comentado
+                            @if (Model.FechaPago.HasValue)
+                            {
+                                <p><strong>Fecha de Pago:</strong> @Model.FechaPago.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                            }
+                            *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Productos</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Detalles != null && Model.Detalles.Any())
+                            {
+                                @foreach (var detalle in Model.Detalles)
+                                {
+                                    <tr>
+                                        <td>@detalle.Producto?.Nombre ?? "Producto"</td>
+                                        <td>@detalle.Cantidad</td>
+                                        <td>RD$@detalle.PrecioUnitario.ToString("F2")</td>
+                                        <td>RD$@detalle.Subtotal.ToString("F2")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dirección de envío -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Dirección de Envío</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Dirección:</strong> @Model.DireccionEnvio<br />
+                        <strong>Ciudad:</strong> @Model.Ciudad<br />
+                        <strong>Teléfono:</strong> @Model.TelefonoContacto
+                    </p>
+                    @if (!string.IsNullOrWhiteSpace(Model.Notas))
+                    {
+                        <p><strong>Notas:</strong> @Model.Notas</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Resumen de pago -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Resumen Financiero</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>RD$@Model.Subtotal.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>ITBIS (18%):</span>
+                        <span>RD$@Model.Impuestos.ToString("F2")</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between" style="font-size: 1.2em; font-weight: bold;">
+                        <span>Total:</span>
+                        <span>RD$@Model.Total.ToString("F2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESHABILITADO: Información de Azul - Pagos desactivados -->
+            @* 
+            @if (!string.IsNullOrWhiteSpace(Model.AzulAuthorizationCode) || !string.IsNullOrWhiteSpace(Model.AzulToken))
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Información de Azul</h5>
+                    </div>
+                    <div class="card-body small">
+                        @if (!string.IsNullOrWhiteSpace(Model.AzulAuthorizationCode))
+                        {
+                            <p><strong>Código de Autorización:</strong><br /> @Model.AzulAuthorizationCode</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.AzulToken))
+                        {
+                            <p><strong>Token:</strong><br /> @Model.AzulToken.Substring(0, Math.Min(20, Model.AzulToken.Length))...</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.AzulResponseCode))
+                        {
+                            <p><strong>Código de Respuesta:</strong> @Model.AzulResponseCode</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.AzulIsoCode))
+                        {
+                            <p><strong>Código ISO:</strong> @Model.AzulIsoCode</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.AzulErrorDescripcion))
+                        {
+                            <p><strong>Descripción de Error:</strong> @Model.AzulErrorDescripcion</p>
+                        }
+                    </div>
+                </div>
+            }
+            *@
+            }
+
+            <!-- Actualizar estado -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Actualizar Estado</h5>
+                </div>
+                <div class="card-body">
+                    <select class="form-select mb-2" id="selectEstado">
+                        <option value="">-- Selecciona nuevo estado --</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmado">Confirmado</option>
+                        <option value="EnProceso">En Proceso</option>
+                        <option value="Enviado">Enviado</option>
+                        <option value="Entregado">Entregado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                    <button class="btn btn-primary w-100" onclick="actualizarEstado()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function actualizarEstado() {
+            const nuevoEstado = $('#selectEstado').val();
+            if (!nuevoEstado) {
+                alert('Por favor selecciona un estado');
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/ActualizarEstadoPedido',
+                type: 'POST',
+                data: {
+                    pedidoId: @Model.Id,
+                    nuevoEstado: nuevoEstado
+                },
+                success: function (data) {
+                    if (data.success) {
+                        alert('Estado actualizado correctamente');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error al actualizar el estado');
+                }
+            });
+        }
+    </script>
+}

@@ -14,12 +14,18 @@ namespace VShop.Controllers
         private readonly IAccountService _accountServiceForWebApp;
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public LoginController(IAccountService accountServiceForWebApp, IMapper mapper, UserManager<AppUser> userManager)
+        public LoginController(
+            IAccountService accountServiceForWebApp,
+            IMapper mapper,
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
             _accountServiceForWebApp = accountServiceForWebApp;
             _mapper = mapper;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
         public async Task<IActionResult> Index()
         {
@@ -38,7 +44,7 @@ namespace VShop.Controllers
 
             }
 
-            return View(new LoginViewModel() { Password = "", UserName = "" });
+            return View(new LoginViewModel() { Email = "", Password = "" });
         }
 
         [HttpPost]
@@ -66,20 +72,21 @@ namespace VShop.Controllers
 
             LoginResponseDto? userDto = await _accountServiceForWebApp.AuthenticateAsync(new LoginDto()
             {
+                Email = vm.Email,
                 Password = vm.Password,
-                UserName = vm.UserName
+                UserName = vm.Email
             });
 
             if (userDto != null && !userDto.HasError)
             {
+                var user = await _userManager.FindByIdAsync(userDto.Id);
+                if (user != null)
+                    await _signInManager.SignInAsync(user, isPersistent: false);
 
                 if (userDto.Roles != null && userDto.Roles.Any(r => r == "Administrador"))
-                {
                     return RedirectToRoute(new { controller = "Admin", action = "Index" });
-                }
 
                 return RedirectToRoute(new { controller = "Client", action = "Index" });
-
             }
             else
             {
@@ -94,7 +101,7 @@ namespace VShop.Controllers
         }
         public async Task<IActionResult> Logout()
         {
-            await _accountServiceForWebApp.SignOutAsync();
+            await _signInManager.SignOutAsync();
             return RedirectToRoute(new { controller = "Client", action = "Index" });
         }
         public IActionResult Register()
@@ -120,7 +127,7 @@ namespace VShop.Controllers
             }
 
             SaveUserDto dto = _mapper.Map<SaveUserDto>(vm);
-            dto.Role = "Cashier";
+            dto.Role = "Cliente";
             string origin = Request?.Headers?.Origin.ToString() ?? string.Empty;
 
             RegisterResponseDto? returnUser = await _accountServiceForWebApp.RegisterUser(dto, origin);

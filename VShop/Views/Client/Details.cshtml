@@ -26,15 +26,15 @@
             <div class="card vshop-card mb-4">
                 <div class="card-body p-0">
                     @{
-                        var imagenPrincipal = Model.Imagenes.FirstOrDefault(i => i.EsPrincipal)?.UrlImagen
-                        ?? Model.Imagenes.FirstOrDefault()?.UrlImagen
-                        ?? Model.Producto.ImagenPrincipal;
+                        var imagenPrincipalId = Model.Imagenes.FirstOrDefault(i => i.EsPrincipal)?.Id
+                                             ?? Model.Imagenes.FirstOrDefault()?.Id
+                                             ?? Model.Producto.ImagenPrincipalId;
                     }
 
-                    @if (!string.IsNullOrEmpty(imagenPrincipal))
+                    @if (imagenPrincipalId.HasValue)
                     {
                         <div class="text-center p-3">
-                            <img id="mainImage" src="~/@imagenPrincipal"
+                            <img id="mainImage" src="/Imagenes/@imagenPrincipalId"
                                  class="img-fluid rounded"
                                  alt="@Model.Producto.Nombre"
                                  style="max-height: 400px; object-fit: contain;">
@@ -57,13 +57,12 @@
                                 {
                                     <div class="col-3">
                                         <a href="#" class="thumbnail-link d-block"
-                                           data-image="@Url.Content("~/" + imagen.value.UrlImagen)"
+                                           data-image="/Imagenes/@imagen.value.Id"
                                            data-index="@imagen.index">
-                                            <img src="@Url.Content("~/" + imagen.value.UrlImagen)"
+                                            <img src="/Imagenes/@imagen.value.Id"
                                                  class="img-thumbnail @(imagen.value.EsPrincipal ? "border-primary" : "")"
                                                  alt="Miniatura @(imagen.index + 1)"
-                                                 style="height: 80px; object-fit: cover;"
-                                                 onerror="this.src='@Url.Content("~/images/placeholder.jpg")'">
+                                                 style="height: 80px; object-fit: cover;">
                                         </a>
                                     </div>
                                 }
@@ -211,9 +210,9 @@
                 {
                     <div class="col">
                         <div class="card h-100 vshop-card hover-shadow">
-                            @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                            @if (producto.ImagenPrincipalId.HasValue)
                             {
-                                <img src="~/@producto.ImagenPrincipal"
+                                <img src="/Imagenes/@producto.ImagenPrincipalId"
                                      class="card-img-top"
                                      alt="@producto.Nombre"
                                      style="height: 200px; object-fit: cover;">

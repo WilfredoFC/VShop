@@ -13,7 +13,11 @@ namespace VShop.Application.ViewModels.User
         [DataType(DataType.Text)]
         public required string LastName { get; set; }
 
-        [Required(ErrorMessage = "Debes de introduccir una cedula ")]
+        [Required(ErrorMessage = "El nombre de usuario es requerido")]
+        [DataType(DataType.Text)]
+        public required string UserName { get; set; }
+
+        [Required(ErrorMessage = "Debes ingresar una cédula")]
         [DataType(DataType.Text)]
         public required string Cedula { get; set; }
 
@@ -21,11 +25,7 @@ namespace VShop.Application.ViewModels.User
         [DataType(DataType.EmailAddress)]
         public required string Email { get; set; }
 
-        [Required(ErrorMessage = "Debes de introduccir algun nombre de usuario ")]
-        [DataType(DataType.Text)]
-        public required string UserName { get; set; }
-
-        [Required(ErrorMessage = "YDebes de ingresar unsa contraseña")]
+        [Required(ErrorMessage = "Debes ingresar una contraseña")]
         [DataType(DataType.Password)]
         public required string Password { get; set; }
 

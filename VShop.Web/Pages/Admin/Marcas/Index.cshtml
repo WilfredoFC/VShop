@@ -1,0 +1,93 @@
+@page
+@model VShop.Web.Pages.Admin.Marcas.IndexModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Marcas";
+}
+
+<div class="container-fluid" style="max-width:700px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold"><i class="fas fa-trademark me-2"></i>Marcas</h4>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMarca" onclick="prepareCreate()">
+            <i class="fas fa-plus me-1"></i>Nueva
+        </button>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Nombre</th><th class="text-center">Estado</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model.Marcas)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@m.Nombre</td>
+                            <td class="text-center">
+                                <span class="badge @(m.EsActivo ? "bg-success" : "bg-secondary")">
+                                    @(m.EsActivo ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary me-1"
+                                        onclick="prepareEdit(@m.Id, '@m.Nombre.Replace("'","\\'")')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="post" asp-page-handler="Delete" class="d-inline">
+                                    <input type="hidden" name="id" value="@m.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('¿Eliminar @m.Nombre?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalMarca" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Marca</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="marcaForm">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="marcaId" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre *</label>
+                        <input type="text" name="nombre" class="form-control" id="marcaNombre" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function prepareCreate() {
+            document.getElementById('modalTitle').textContent = 'Nueva Marca';
+            document.getElementById('marcaForm').action = '@Url.Page("Index", "Create")';
+            document.getElementById('marcaId').value = '';
+            document.getElementById('marcaNombre').value = '';
+        }
+        function prepareEdit(id, nombre) {
+            document.getElementById('modalTitle').textContent = 'Editar Marca';
+            document.getElementById('marcaForm').action = '@Url.Page("Index", "Edit")';
+            document.getElementById('marcaId').value = id;
+            document.getElementById('marcaNombre').value = nombre;
+            new bootstrap.Modal(document.getElementById('modalMarca')).show();
+        }
+    </script>
+}

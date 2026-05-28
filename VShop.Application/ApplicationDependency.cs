@@ -8,11 +8,13 @@ namespace VShop.Application
     {
         public static void AddApplicationLayer(this IServiceCollection service)
         {
-            service.AddAutoMapper(typeof(ApplicationDependency).Assembly);
+            service.AddAutoMapper(cfg => { }, typeof(ApplicationDependency).Assembly);
 
             #region Services IOC
             service.AddTransient(typeof(IBaseServices<,>), typeof(BaseServices<,>));
 
+            // DESHABILITADO: Servicio de Azul - Pagos desactivados
+            // service.AddScoped<IAzulService, AzulService>();
             service.AddScoped<ICarritoItemService, CarritoItemService>();
             service.AddScoped<ICategoriaService, CategoriaService>();
             service.AddScoped<IInventarioMovimientoService, InventarioMovimientoService>();

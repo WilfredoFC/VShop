@@ -28,7 +28,7 @@ namespace VShop.Application.Mapper
             CreateMap<ProductoDto, ProductoViewModel>()
                 .ForMember(dest => dest.Categoria, opt => opt.MapFrom(src => src.Categoria))
                 .ForMember(dest => dest.Marca, opt => opt.MapFrom(src => src.Marca))
-                .ForMember(dest => dest.ImagenPrincipal, opt => opt.Ignore())
+                .ForMember(dest => dest.ImagenPrincipalId, opt => opt.Ignore())
                 .ForMember(dest => dest.EstadoStock, opt => opt.Ignore())
                 .ForMember(dest => dest.EstadoStockClase, opt => opt.Ignore())
                 .ForMember(dest => dest.TieneDescuento,

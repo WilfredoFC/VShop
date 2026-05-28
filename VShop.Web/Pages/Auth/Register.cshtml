@@ -1,0 +1,70 @@
+@page
+@model VShop.Web.Pages.Auth.RegisterModel
+@{
+    Layout = "_LayoutClient";
+    ViewData["Title"] = "Registro";
+}
+
+<div class="container py-5" style="max-width: 500px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h5 class="card-title text-center mb-4 fw-bold">Crear Cuenta</h5>
+
+            @if (Model.Success)
+            {
+                <div class="alert alert-success">
+                    Registro exitoso. Revisa tu correo para confirmar tu cuenta.
+                    <a asp-page="/Auth/Login" class="alert-link">Ir al login</a>
+                </div>
+            }
+            else
+            {
+                @if (Model.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach (var e in Model.Errors)
+                            {
+                                <li>@e</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.FirstName" class="form-label fw-semibold">Nombre</label>
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="Juan" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.LastName" class="form-label fw-semibold">Apellido</label>
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Pérez" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Cedula" class="form-label fw-semibold">Cédula <span class="text-muted">(opcional)</span></label>
+                        <input asp-for="Input.Cedula" class="form-control" placeholder="000-0000000-0" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label fw-semibold">Correo</label>
+                        <input asp-for="Input.Email" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label fw-semibold">Contraseña</label>
+                        <input asp-for="Input.Password" class="form-control" type="password" placeholder="Mínimo 8 caracteres" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.ConfirmPassword" class="form-label fw-semibold">Confirmar Contraseña</label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control" type="password" placeholder="Repetir contraseña" required />
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-vshop py-2">Registrarme</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3 small">
+                    ¿Ya tienes cuenta? <a asp-page="/Auth/Login" class="text-decoration-none fw-semibold">Inicia sesión</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

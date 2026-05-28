@@ -4,9 +4,9 @@ namespace VShop.Application.ViewModels.User
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "El nombre de usuario es requerido")]
-        [DataType(DataType.Text)]
-        public required string UserName { get; set; }
+        [Required(ErrorMessage = "El correo electrónico es requerido")]
+        [DataType(DataType.EmailAddress)]
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "La contraseña es requerida")]
         [DataType(DataType.Password)]

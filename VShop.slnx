@@ -8,9 +8,11 @@
   <Folder Name="/Infraestructure/">
     <Project Path="VShop.Identity/VShop.Identity.csproj" Id="2fedbf07-dc9e-4da9-9694-f379372d5d5a" />
     <Project Path="VShop.Shared/VShop.Shared.csproj" Id="32157625-6a72-480b-a4ec-4437e4cc8033" />
-    <Project Path="VShopa.Persistences/VShop.Persistences.csproj" Id="036fe04c-0fa3-406e-b307-dc59a91f32e1" />
+    <Project Path="VShop.Persistences/VShop.Persistences.csproj" Id="036fe04c-0fa3-406e-b307-dc59a91f32e1" />
   </Folder>
   <Folder Name="/Presentation/">
     <Project Path="VShop/VShop.csproj" Id="7a003d42-6ee5-4c9f-bfe6-533f989d1e79" />
+    <Project Path="VShop.Api/VShop.Api.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+    <Project Path="VShop.Web/VShop.Web.csproj" Id="b2c3d4e5-f6a7-8901-bcde-f01234567891" />
   </Folder>
 </Solution>

@@ -165,7 +165,7 @@
                                         <div class="col-6">
                                             <div class="card border @(imagen.EsPrincipal ? "border-primary" : "")">
                                                 <div class="position-relative">
-                                                    <img src="~/@imagen.UrlImagen" class="card-img-top" alt="Imagen producto" style="height: 100px; object-fit: cover;">
+                                                    <img src="/Imagenes/@imagen.Id" class="card-img-top" alt="Imagen producto" style="height: 100px; object-fit: cover;">
                                                     <div class="position-absolute top-0 end-0 p-1">
                                                         @if (imagen.EsPrincipal)
                                                         {
@@ -185,7 +185,7 @@
                                                 <div class="card-body p-2 text-center">
                                                     <small class="d-block">Orden: @imagen.Orden</small>
                                                     <a href="#" class="btn btn-sm btn-outline-danger btn-delete-image"
-                                                       data-id="@imagen.Id" data-url="@imagen.UrlImagen">
+                                                       data-id="@imagen.Id">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </div>

@@ -7,11 +7,11 @@ namespace VShop.Identity.Entities
     {
         [Required]
         [StringLength(100)]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [StringLength(100)]
         public string? Cedula { get; set; }

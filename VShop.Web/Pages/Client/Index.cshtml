@@ -1,0 +1,145 @@
+@page
+@model VShop.Web.Pages.Client.IndexModel
+@{
+    Layout = "_LayoutClient";
+    ViewData["Title"] = "Catálogo";
+}
+
+<div class="container py-3">
+    <div class="row g-3">
+        <!-- Filtros -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-semibold"><i class="fas fa-filter me-2"></i>Filtros</h6>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosPanel">
+                        <i class="fas fa-chevron-down" id="chevronFiltros"></i>
+                    </button>
+                </div>
+                <div class="collapse show" id="filtrosPanel">
+                    <div class="card-body">
+                        <form method="get">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Categoría</label>
+                                <select name="categoriaId" class="form-select form-select-sm">
+                                    <option value="">Todas</option>
+                                    @foreach (var cat in Model.Categorias)
+                                    {
+                                        <option value="@cat.Id" selected="@(Model.CategoriaId == cat.Id)">@cat.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Marca</label>
+                                <select name="marcaId" class="form-select form-select-sm">
+                                    <option value="">Todas</option>
+                                    @foreach (var marca in Model.Marcas)
+                                    {
+                                        <option value="@marca.Id" selected="@(Model.MarcaId == marca.Id)">@marca.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ordenar por</label>
+                                <select name="ordenar" class="form-select form-select-sm">
+                                    <option value="nombre" selected="@(Model.Ordenar == "nombre")">Nombre</option>
+                                    <option value="precio_asc" selected="@(Model.Ordenar == "precio_asc")">Precio ↑</option>
+                                    <option value="precio_desc" selected="@(Model.Ordenar == "precio_desc")">Precio ↓</option>
+                                    <option value="reciente" selected="@(Model.Ordenar == "reciente")">Más recientes</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" name="soloConDescuento" value="true" checked="@Model.SoloConDescuento" />
+                                <label class="form-check-label small">Solo con descuento</label>
+                            </div>
+                            <input type="hidden" name="busqueda" value="@Model.Busqueda" />
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-vshop btn-sm">Aplicar</button>
+                                <a asp-page="/Client/Index" class="btn btn-outline-secondary btn-sm">Limpiar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">@Model.TotalRegistros producto(s) encontrado(s)</h5>
+            </div>
+
+            @if (!Model.Productos.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No se encontraron productos.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-2 row-cols-md-3 g-3">
+                    @foreach (var p in Model.Productos)
+                    {
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm">
+                                @if (p.ImagenPrincipalId.HasValue)
+                                {
+                                    <img src="@Model.ApiBase/imagenes/@p.ImagenPrincipalId"
+                                         class="card-img-top" style="height:180px;object-fit:cover;"
+                                         alt="@p.Nombre">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                    </div>
+                                }
+                                @if (p.TieneDescuento)
+                                {
+                                    <span class="position-absolute top-0 end-0 badge bg-danger m-2">Oferta</span>
+                                }
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a asp-page="/Client/Details" asp-route-id="@p.Id"
+                                           class="text-decoration-none text-dark stretched-link">@p.Nombre</a>
+                                    </h6>
+                                    <p class="text-muted small mb-1">@p.Categoria</p>
+                                    @if (p.TieneDescuento)
+                                    {
+                                        <span class="text-muted text-decoration-line-through small">@p.Precio.ToString("C")</span>
+                                        <span class="fw-bold text-danger ms-1">@p.PrecioFinal.ToString("C")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-bold">@p.Precio.ToString("C")</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Paginación -->
+                @if (Model.TotalPaginas > 1)
+                {
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            @for (int i = 1; i <= Model.TotalPaginas; i++)
+                            {
+                                <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                                    <a class="page-link" asp-page="/Client/Index"
+                                       asp-route-pagina="@i"
+                                       asp-route-busqueda="@Model.Busqueda"
+                                       asp-route-categoriaId="@Model.CategoriaId"
+                                       asp-route-marcaId="@Model.MarcaId"
+                                       asp-route-ordenar="@Model.Ordenar">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>

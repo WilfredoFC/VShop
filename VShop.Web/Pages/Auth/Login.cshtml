@@ -1,0 +1,46 @@
+@page
+@model VShop.Web.Pages.Auth.LoginModel
+@{
+    Layout = "_LayoutClient";
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="container py-5" style="max-width: 440px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h2 class="card-title text-center mb-4 fw-bold">
+                <span style="color: #667eea">V</span>Shop
+            </h2>
+            <h5 class="text-center text-muted mb-4">Iniciar Sesión</h5>
+
+            @if (Model.Error != null)
+            {
+                <div class="alert alert-danger">@Model.Error</div>
+            }
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label fw-semibold">Correo</label>
+                    <input asp-for="Input.Email" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label fw-semibold">Contraseña</label>
+                    <input asp-for="Input.Password" class="form-control" type="password" placeholder="••••••••" required />
+                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-vshop py-2">Entrar</button>
+                </div>
+            </form>
+
+            <hr class="my-3">
+            <div class="text-center small">
+                <a asp-page="/Auth/ForgotPassword" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="text-center small mt-2">
+                ¿No tienes cuenta? <a asp-page="/Auth/Register" class="text-decoration-none fw-semibold">Regístrate</a>
+            </div>
+        </div>
+    </div>
+</div>

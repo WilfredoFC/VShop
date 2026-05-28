@@ -26,7 +26,7 @@ namespace VShop.Controllers
         {
             await LoadCategorias();
             // Consulta base - solo productos activos
-            var productosQuery = (await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagen"]))
+            var productosQuery = (await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]))
                 .Where(p => p.EsActivo && p.Stock > 0) // Solo productos activos y con stock
                 .ToList();
 
@@ -108,8 +108,8 @@ namespace VShop.Controllers
                                 Stock = p.Stock,
                                 Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría",
                                 Marca = p.Marca != null ? p.Marca.Nombre : "Sin marca",
-                                ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
-                                                         .FirstOrDefault()?.UrlImagen ?? "",
+                                ImagenPrincipalId = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
+                                                            .FirstOrDefault()?.Id,
                                 EsActivo = p.EsActivo
                             })
                             .ToList();
@@ -150,7 +150,7 @@ namespace VShop.Controllers
         public async Task<IActionResult> Details(int id)
         {
             await LoadCategorias();
-            var producto = (await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagenes"]))
+            var producto = (await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]))
                 .FirstOrDefault(p => p.Id == id && p.EsActivo);
 
             if (producto == null)
@@ -162,7 +162,7 @@ namespace VShop.Controllers
             var imagenes = await _productoImagenService.GetByProductoIdAsync(id);
 
             // Obtener productos relacionados (misma categoría)
-            var productosRelacionados = (await _productoService.GetWithInclude(["Categorias", "Marcas", "Imagen"]))
+            var productosRelacionados = (await _productoService.GetWithInclude(["Categoria", "Marca", "Imagenes"]))
                 .Where(p => p.Id != id &&
                             p.CategoriaId == producto.CategoriaId &&
                             p.EsActivo)
@@ -183,7 +183,7 @@ namespace VShop.Controllers
                 Stock = producto.Stock,
                 Categoria = producto.Categoria?.Nombre ?? "Sin categoría",
                 Marca = producto.Marca?.Nombre ?? "Sin marca",
-                ImagenPrincipal = imagenes.FirstOrDefault(i => i.EsPrincipal)?.UrlImagen ?? "",
+                ImagenPrincipalId = imagenes.FirstOrDefault(i => i.EsPrincipal)?.Id,
                 EsActivo = producto.EsActivo
             };
 
@@ -191,8 +191,8 @@ namespace VShop.Controllers
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
-                ImagenPrincipal = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
-                                         .FirstOrDefault()?.UrlImagen ?? "",
+                ImagenPrincipalId = imgQuery.Where(img => img.ProductoId == p.Id && img.EsPrincipal)
+                                            .FirstOrDefault()?.Id,
                 EsActivo = p.EsActivo
             }).ToList();
 
@@ -203,7 +203,6 @@ namespace VShop.Controllers
                 Imagenes = imagenes.Select(im => new ProductoImagenViewModel
                 {
                     Id = im.Id,
-                    UrlImagen = im.UrlImagen,
                     EsPrincipal = im.EsPrincipal
                 }).ToList(),
                 ProductosRelacionados = productosRelacionadosViewModels

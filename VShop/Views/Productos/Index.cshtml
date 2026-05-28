@@ -158,9 +158,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                                        @if (producto.ImagenPrincipalId.HasValue)
                                         {
-                                            <img src="~/@producto.ImagenPrincipal" class="img-thumbnail" width="60" height="60"
+                                            <img src="/Imagenes/@producto.ImagenPrincipalId" class="img-thumbnail" width="60" height="60"
                                                  alt="@producto.Nombre" style="object-fit: cover;">
                                         }
                                         else

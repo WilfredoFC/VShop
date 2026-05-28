@@ -1,0 +1,286 @@
+@model List<VShop.Application.Dtos.Pedido.PedidoDto>
+
+@{
+    ViewData["Title"] = "Gestión de Pedidos - Administrador";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-boxes"></i> Gestión de Pedidos</h1>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
+            <i class="fas fa-search"></i> Buscar Pedido
+        </button>
+    </div>
+
+    <!-- Filtros por estado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary filtro-estado" data-estado="todos">
+                    Todos
+                </button>
+                <button type="button" class="btn btn-outline-warning filtro-estado" data-estado="Pendiente">
+                    Pendiente
+                </button>
+                <button type="button" class="btn btn-outline-info filtro-estado" data-estado="Confirmado">
+                    Confirmado
+                </button>
+                <button type="button" class="btn btn-outline-primary filtro-estado" data-estado="EnProceso">
+                    En Proceso
+                </button>
+                <button type="button" class="btn btn-outline-success filtro-estado" data-estado="Enviado">
+                    Enviado
+                </button>
+                <button type="button" class="btn btn-outline-success filtro-estado" data-estado="Entregado">
+                    Entregado
+                </button>
+                <button type="button" class="btn btn-outline-danger filtro-estado" data-estado="Cancelado">
+                    Cancelado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de pedidos -->
+    <div class="table-responsive">
+        <table class="table table-hover" id="tablaPedidos">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Número de Pedido</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    @foreach (var pedido in Model)
+                    {
+                        <tr data-pedido-id="@pedido.Id">
+                            <td>@pedido.Id</td>
+                            <td>
+                                <strong>@pedido.NumeroPedido</strong>
+                            </td>
+                            <td>@pedido.UsuarioId</td>
+                            <td>@pedido.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><strong>RD$@pedido.Total.ToString("F2")</strong></td>
+                            <td>
+                                @{
+                                    var badgeClass = pedido.Estado switch
+                                    {
+                                        "Pendiente" => "warning",
+                                        "Confirmado" => "info",
+                                        "EnProceso" => "primary",
+                                        "Enviado" => "success",
+                                        "Entregado" => "success",
+                                        "Cancelado" => "danger",
+                                        _ => "secondary"
+                                    };
+                                }
+                                <span class="badge bg-@badgeClass">@pedido.Estado</span>
+                            </td>
+                            <td>
+                                <a href="javascript:verDetalles(@pedido.Id)" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <button type="button" class="btn btn-sm btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalActualizarEstado"
+                                        onclick="prepararActualizarEstado(@pedido.Id, '@pedido.Estado')">
+                                    <i class="fas fa-edit"></i> Actualizar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No hay pedidos registrados</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de búsqueda -->
+<div class="modal fade" id="modalBusqueda" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="inputBusqueda" 
+                       placeholder="Ingresa número de pedido o ID de usuario" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="buscarPedido()">Buscar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de actualizar estado -->
+<div class="modal fade" id="modalActualizarEstado" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Estado del Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="textoPedidoEstado"></p>
+                <select class="form-select" id="selectNuevoEstado">
+                    <option value="">-- Selecciona nuevo estado --</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Confirmado">Confirmado</option>
+                    <option value="EnProceso">En Proceso</option>
+                    <option value="Enviado">Enviado</option>
+                    <option value="Entregado">Entregado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarEstadoPedido()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let pedidoIdActual = 0;
+
+        function verDetalles(pedidoId) {
+            window.location.href = '/Admin/DetallesPedido/' + pedidoId;
+        }
+
+        function prepararActualizarEstado(pedidoId, estadoActual) {
+            pedidoIdActual = pedidoId;
+            $('#textoPedidoEstado').text('Pedido #' + pedidoId + ' - Estado actual: ' + estadoActual);
+            $('#selectNuevoEstado').val('');
+        }
+
+        function actualizarEstadoPedido() {
+            const nuevoEstado = $('#selectNuevoEstado').val();
+            if (!nuevoEstado) {
+                alert('Por favor selecciona un nuevo estado');
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/ActualizarEstadoPedido',
+                type: 'POST',
+                data: {
+                    pedidoId: pedidoIdActual,
+                    nuevoEstado: nuevoEstado
+                },
+                success: function (data) {
+                    if (data.success) {
+                        alert('Estado actualizado correctamente');
+                        bootstrap.Modal.getInstance(document.getElementById('modalActualizarEstado')).hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error al actualizar el estado');
+                }
+            });
+        }
+
+        function buscarPedido() {
+            const termino = $('#inputBusqueda').val();
+            if (!termino) {
+                alert('Por favor ingresa un término de búsqueda');
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/BuscarPedidos',
+                type: 'GET',
+                data: { termino: termino },
+                success: function (data) {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('modalBusqueda')).hide();
+                        mostrarResultadosBusqueda(data.pedidos);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error al buscar pedidos');
+                }
+            });
+        }
+
+        function mostrarResultadosBusqueda(pedidos) {
+            const tbody = $('#tablaPedidos tbody');
+            tbody.empty();
+
+            if (pedidos.length === 0) {
+                tbody.html('<tr><td colspan="7" class="text-center">No se encontraron resultados</td></tr>');
+                return;
+            }
+
+            pedidos.forEach(function (pedido) {
+                let badgeClass = 'secondary';
+                switch (pedido.estado) {
+                    case 'Pendiente': badgeClass = 'warning'; break;
+                    case 'Confirmado': badgeClass = 'info'; break;
+                    case 'EnProceso': badgeClass = 'primary'; break;
+                    case 'Enviado':
+                    case 'Entregado': badgeClass = 'success'; break;
+                    case 'Cancelado': badgeClass = 'danger'; break;
+                }
+
+                const row = '<tr>' +
+                    '<td>' + pedido.id + '</td>' +
+                    '<td><strong>' + pedido.numeroPedido + '</strong></td>' +
+                    '<td>' + pedido.usuarioId + '</td>' +
+                    '<td>' + new Date(pedido.fechaPedido).toLocaleDateString() + '</td>' +
+                    '<td><strong>RD$' + pedido.total.toFixed(2) + '</strong></td>' +
+                    '<td><span class="badge bg-' + badgeClass + '">' + pedido.estado + '</span></td>' +
+                    '<td>' +
+                    '<a href="javascript:verDetalles(' + pedido.id + ')" class="btn btn-sm btn-info">' +
+                    '<i class="fas fa-eye"></i> Ver</a>' +
+                    '</td>' +
+                    '</tr>';
+                tbody.append(row);
+            });
+        }
+
+        $('.filtro-estado').click(function () {
+            const estado = $(this).data('estado');
+
+            if (estado === 'todos') {
+                location.reload();
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/FiltrarPorEstado',
+                type: 'GET',
+                data: { estado: estado },
+                success: function (data) {
+                    if (data.success) {
+                        mostrarResultadosBusqueda(data.pedidos);
+                    }
+                },
+                error: function () {
+                    alert('Error al filtrar pedidos');
+                }
+            });
+        });
+    </script>
+}

@@ -5,21 +5,21 @@
     ViewData["ActivePage"] = "Catalogo";
 }
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-2">
     <!-- Hero Section -->
-    <div class="bg-light py-5 mb-5">
+    <div class="bg-light py-3 mb-3">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-5 fw-bold text-vshop">Catálogo de Productos</h1>
-                    <p class="lead text-muted">Descubre nuestra amplia selección de productos</p>
+                <div class="col-lg-5">
+                    <h2 class="fw-bold text-vshop mb-1">Catálogo de Productos</h2>
+                    <p class="text-muted mb-0 small">Descubre nuestra amplia selección de productos</p>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-7">
                     <form asp-action="Index" method="get" class="d-flex">
-                        <input type="text" class="form-control form-control-lg me-2"
+                        <input type="text" class="form-control me-2"
                                name="Busqueda" value="@Model.Filtro.Busqueda"
                                placeholder="Buscar productos...">
-                        <button type="submit" class="btn btn-vshop btn-lg">
+                        <button type="submit" class="btn btn-vshop">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
@@ -31,84 +31,79 @@
     <div class="container">
         <div class="row">
             <!-- Sidebar de filtros -->
-            <div class="col-lg-3 mb-4">
+            <div class="col-lg-3 mb-3">
                 <div class="card vshop-card sticky-top" style="top: 150px;">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros</h5>
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                         role="button" data-bs-toggle="collapse" data-bs-target="#filtrosPanel"
+                         aria-expanded="true" aria-controls="filtrosPanel" id="filtrosHeader"
+                         style="cursor: pointer;">
+                        <span><i class="fas fa-filter me-2"></i>Filtros</span>
+                        <i class="fas fa-chevron-up" id="filtrosChevron"></i>
                     </div>
-                    <div class="card-body">
-                        <form asp-action="Catalogo" method="get">
-                            <!-- Buscador -->
-                            <div class="mb-3">
-                                <label asp-for="Filtro.Busqueda" class="form-label text-dark">Buscar</label>
-                                <input asp-for="Filtro.Busqueda" class="form-control" placeholder="Nombre, descripción...">
-                            </div>
+                    <div class="collapse show" id="filtrosPanel">
+                        <div class="card-body">
+                            <form asp-action="Catalogo" method="get">
+                                <!-- Buscador -->
+                                <div class="mb-3">
+                                    <label asp-for="Filtro.Busqueda" class="form-label text-dark">Buscar</label>
+                                    <input asp-for="Filtro.Busqueda" class="form-control" placeholder="Nombre, descripción...">
+                                </div>
 
-                            <!-- Categoría -->
-                            <div class="mb-3">
-                                <label asp-for="Filtro.CategoriaId" class="form-label text-dark">Categoría</label>
-                                <select asp-for="Filtro.CategoriaId" class="form-select">
-                                    <option value="">Todas las categorías</option>
-                                    @foreach (var categoria in Model.Categorias)
-                                    {
-                                        <option value="@categoria.Id" selected="@(Model.Filtro.CategoriaId == categoria.Id)">
-                                            @categoria.Nombre
-                                        </option>
-                                    }
-                                </select>
-                            </div>
+                                <!-- Categoría -->
+                                <div class="mb-3">
+                                    <label asp-for="Filtro.CategoriaId" class="form-label text-dark">Categoría</label>
+                                    <select asp-for="Filtro.CategoriaId" class="form-select">
+                                        <option value="">Todas las categorías</option>
+                                        @foreach (var categoria in Model.Categorias)
+                                        {
+                                            <option value="@categoria.Id" selected="@(Model.Filtro.CategoriaId == categoria.Id)">
+                                                @categoria.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
 
-                            <!-- Marca -->
-                            <div class="mb-3">
-                                <label asp-for="Filtro.MarcaId" class="form-label text-dark">Marca</label>
-                                <select asp-for="Filtro.MarcaId" class="form-select">
-                                    <option value="">Todas las marcas</option>
-                                    @foreach (var marca in Model.Marcas)
-                                    {
-                                        <option value="@marca.Id" selected="@(Model.Filtro.MarcaId == marca.Id)">
-                                            @marca.Nombre
-                                        </option>
-                                    }
-                                </select>
-                            </div>
+                                <!-- Marca -->
+                                <div class="mb-3">
+                                    <label asp-for="Filtro.MarcaId" class="form-label text-dark">Marca</label>
+                                    <select asp-for="Filtro.MarcaId" class="form-select">
+                                        <option value="">Todas las marcas</option>
+                                        @foreach (var marca in Model.Marcas)
+                                        {
+                                            <option value="@marca.Id" selected="@(Model.Filtro.MarcaId == marca.Id)">
+                                                @marca.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
 
-                            <!-- Estado Stock -->
-                            @* <div class="mb-3">
-                                <label asp-for="Filtro.EstadoStock" class="form-label text-dark">Estado Stock</label>
-                                <select asp-for="Filtro.EstadoStock" class="form-select">
-                                    <option value="todos">Todos los estados</option>
-                                    <option value="disponible" selected="@(Model.Filtro.EstadoStock == "disponible")">Disponible</option>
-                                    <option value="bajo" selected="@(Model.Filtro.EstadoStock == "bajo")">Stock Bajo</option>
-                                    <option value="agotado" selected="@(Model.Filtro.EstadoStock == "agotado")">Agotado</option>
-                                </select>
-                            </div> *@
+                                <!-- Ordenar por -->
+                                <div class="mb-3">
+                                    <label asp-for="Filtro.OrdenarPor" class="form-label text-dark">Ordenar por</label>
+                                    <select asp-for="Filtro.OrdenarPor" class="form-select">
+                                        <option value="nombre" selected="@(Model.Filtro.OrdenarPor == "nombre")">Nombre (A-Z)</option>
+                                        <option value="reciente" selected="@(Model.Filtro.OrdenarPor == "reciente")">Más recientes</option>
+                                        <option value="precio_asc" selected="@(Model.Filtro.OrdenarPor == "precio_asc")">Precio (menor a mayor)</option>
+                                        <option value="precio_desc" selected="@(Model.Filtro.OrdenarPor == "precio_desc")">Precio (mayor a menor)</option>
+                                    </select>
+                                </div>
 
-                            <!-- Ordenar por -->
-                            <div class="mb-3">
-                                <label asp-for="Filtro.OrdenarPor" class="form-label text-dark">Ordenar por</label>
-                                <select asp-for="Filtro.OrdenarPor" class="form-select">
-                                    <option value="nombre" selected="@(Model.Filtro.OrdenarPor == "nombre")">Nombre (A-Z)</option>
-                                    <option value="reciente" selected="@(Model.Filtro.OrdenarPor == "reciente")">Más recientes</option>
-                                    <option value="precio_asc" selected="@(Model.Filtro.OrdenarPor == "precio_asc")">Precio (menor a mayor)</option>
-                                    <option value="precio_desc" selected="@(Model.Filtro.OrdenarPor == "precio_desc")">Precio (mayor a menor)</option>
-                                </select>
-                            </div>
+                                <!-- Solo con descuento -->
+                                <div class="mb-3 form-check">
+                                    <input asp-for="Filtro.SoloConDescuento" class="form-check-input" />
+                                    <label asp-for="Filtro.SoloConDescuento" class="form-check-label text-dark">Solo con descuento</label>
+                                </div>
 
-                            <!-- Solo con descuento -->
-                            <div class="mb-3 form-check">
-                                <input asp-for="Filtro.SoloConDescuento" class="form-check-input" />
-                                <label asp-for="Filtro.SoloConDescuento" class="form-check-label text-dark">Solo productos con descuento</label>
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-filter me-2"></i>Aplicar Filtros
-                                </button>
-                                <a asp-action="Catalogo" class="btn btn-outline-secondary">
-                                    <i class="fas fa-redo me-2"></i>Limpiar Filtros
-                                </a>
-                            </div>
-                        </form>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-filter me-2"></i>Aplicar Filtros
+                                    </button>
+                                    <a asp-action="Catalogo" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-redo me-2"></i>Limpiar Filtros
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -153,17 +148,17 @@
 
                                     <!-- Imagen -->
                                     <div class="product-image position-relative overflow-hidden">
-                                        @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                                        @if (producto.ImagenPrincipalId.HasValue)
                                         {
-                                            <img src="~/@producto.ImagenPrincipal"
+                                            <img src="/Imagenes/@producto.ImagenPrincipalId"
                                                  class="card-img-top"
                                                  alt="@producto.Nombre"
-                                                 style="height: 250px; object-fit: cover;">
+                                                 style="height: 180px; object-fit: cover;">
                                         }
                                         else
                                         {
                                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                                 style="height: 250px;">
+                                                 style="height: 180px;">
                                                 <i class="fas fa-image fa-3x text-muted"></i>
                                             </div>
                                         }
@@ -253,17 +248,17 @@
                             <div class="list-group-item list-group-item-action">
                                 <div class="row align-items-center">
                                     <div class="col-md-3">
-                                        @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                                        @if (producto.ImagenPrincipalId.HasValue)
                                         {
-                                            <img src="~/@producto.ImagenPrincipal"
+                                            <img src="/Imagenes/@producto.ImagenPrincipalId"
                                                  class="img-fluid rounded"
                                                  alt="@producto.Nombre"
-                                                 style="max-height: 150px;">
+                                                 style="max-height: 110px;">
                                         }
                                         else
                                         {
                                             <div class="bg-light d-flex align-items-center justify-content-center rounded"
-                                                 style="height: 150px;">
+                                                 style="height: 110px;">
                                                 <i class="fas fa-image fa-2x text-muted"></i>
                                             </div>
                                         }
@@ -410,6 +405,36 @@
                 $('#btnGridView').removeClass('active');
                 $('#listView').removeClass('d-none');
                 $('#gridView').addClass('d-none');
+            });
+
+            // Panel de filtros desplegable — persistir estado en localStorage
+            var FILTROS_KEY = 'vshop_filtros_abiertos';
+            var panel = document.getElementById('filtrosPanel');
+            var chevron = document.getElementById('filtrosChevron');
+
+            function actualizarChevron(abierto) {
+                if (abierto) {
+                    chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                } else {
+                    chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            }
+
+            // Restaurar estado guardado (por defecto: abierto)
+            if (localStorage.getItem(FILTROS_KEY) === 'cerrado') {
+                var bsCollapse = new bootstrap.Collapse(panel, { toggle: false });
+                bsCollapse.hide();
+                actualizarChevron(false);
+            }
+
+            panel.addEventListener('shown.bs.collapse', function() {
+                localStorage.setItem(FILTROS_KEY, 'abierto');
+                actualizarChevron(true);
+            });
+
+            panel.addEventListener('hidden.bs.collapse', function() {
+                localStorage.setItem(FILTROS_KEY, 'cerrado');
+                actualizarChevron(false);
             });
         });
     </script>

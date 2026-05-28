@@ -5,7 +5,8 @@ namespace VShop.Domain.Entities
     public class ProductoImagen : BaseEntity
     {
         public int ProductoId { get; set; }
-        public string UrlImagen { get; set; }
+        public byte[]? Datos { get; set; }
+        public string? TipoContenido { get; set; }
         public bool EsPrincipal { get; set; }
         public int Orden { get; set; }
 

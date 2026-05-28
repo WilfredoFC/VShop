@@ -47,7 +47,7 @@
                             @{
                                 var imagenPrincipal = Model.Imagenes.FirstOrDefault(i => i.EsPrincipal) ?? Model.Imagenes.First();
                             }
-                            <img src="@Url.Content($"~/{imagenPrincipal.UrlImagen}")"
+                            <img src="/Imagenes/@imagenPrincipal.Id"
                                  class="img-fluid rounded"
                                  alt="@Model.Nombre"
                                  id="mainImage"
@@ -61,11 +61,11 @@
                                 @foreach (var imagen in Model.Imagenes)
                                 {
                                     <div class="col-3">
-                                        <img src="@Url.Content($"~/{imagen.UrlImagen}")"
+                                        <img src="/Imagenes/@imagen.Id"
                                              class="img-thumbnail @(imagen.EsPrincipal ? "border-primary" : "")"
                                              alt="Imagen @imagen.Orden"
                                              style="cursor: pointer; height: 80px; object-fit: cover;"
-                                             onclick="changeMainImage('@Url.Content($"~/{imagen.UrlImagen}")', this)">
+                                             onclick="changeMainImage('/Imagenes/@imagen.Id', this)">
                                         @if (imagen.EsPrincipal)
                                         {
                                             <div class="text-center mt-1">
@@ -335,11 +335,11 @@
                             {
                                 <div class="col-md-3 col-sm-4 col-6">
                                     <div class="card border-0 shadow-sm">
-                                        <img src="@Url.Content($"~/{imagen.UrlImagen}")"
+                                        <img src="/Imagenes/@imagen.Id"
                                              class="card-img-top"
                                              alt="Imagen @imagen.Orden"
                                              style="height: 200px; object-fit: cover; cursor: pointer;"
-                                             onclick="openImageModal('@Url.Content($"~/{imagen.UrlImagen}")')">
+                                             onclick="openImageModal('/Imagenes/@imagen.Id')">
                                         <div class="card-body text-center">
                                             <small class="text-muted">Orden: @imagen.Orden</small>
                                             @if (imagen.EsPrincipal)

@@ -1,0 +1,212 @@
+@page
+@model VShop.Web.Pages.Carrito.IndexModel
+@{
+    Layout = "_LayoutClient";
+    ViewData["Title"] = "Carrito de Compras";
+}
+
+@if (Model.PedidoCreado)
+{
+    <div class="container py-5" style="max-width: 560px;">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body p-5">
+                <i class="fas fa-circle-check fa-4x text-success mb-3"></i>
+                <h4 class="fw-bold mb-2">¡Pedido creado exitosamente!</h4>
+                <p class="text-muted">Hemos recibido tu pedido. Pronto recibirás una confirmación.</p>
+                <a asp-page="/Client/Index" class="btn btn-vshop mt-3">
+                    <i class="fas fa-store me-1"></i>Seguir comprando
+                </a>
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+<div class="container py-4">
+    <h3 class="fw-bold mb-4"><i class="fas fa-cart-shopping me-2 text-vshop"></i>Mi Carrito</h3>
+
+    @if (Model.Error != null)
+    {
+        <div class="alert alert-danger">@Model.Error</div>
+    }
+
+    @if (Model.Carrito == null || Model.Carrito.Items.Count == 0)
+    {
+        <div class="card shadow-sm border-0 text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-cart-arrow-down fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">Tu carrito está vacío</h5>
+                <a asp-page="/Client/Index" class="btn btn-vshop mt-3">
+                    <i class="fas fa-store me-1"></i>Ver productos
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Artículos -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <table class="table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Carrito.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                @if (item.ImagenId.HasValue)
+                                                {
+                                                    <img src="@Model.ApiBase/imagenes/@item.ImagenId" alt="@item.NombreProducto"
+                                                         width="56" height="56" class="rounded object-fit-cover border" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                                         style="width:56px;height:56px">
+                                                        <i class="fas fa-image text-muted"></i>
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <div class="fw-semibold small">@item.NombreProducto</div>
+                                                    <div class="text-muted small">Stock: @item.Stock</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="min-width:140px">
+                                            <form method="post" asp-page-handler="Actualizar"
+                                                  class="d-flex align-items-center justify-content-center gap-1">
+                                                <input type="hidden" name="itemId" value="@item.Id" />
+                                                <button type="submit" name="cantidad" value="@(item.Cantidad - 1)"
+                                                        class="btn btn-outline-secondary btn-sm px-2">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <span class="fw-semibold mx-1" style="min-width:24px">@item.Cantidad</span>
+                                                <button type="submit" name="cantidad"
+                                                        value="@Math.Min(item.Cantidad + 1, item.Stock)"
+                                                        class="btn btn-outline-secondary btn-sm px-2"
+                                                        @(item.Cantidad >= item.Stock ? "disabled" : "")>
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            $@item.PrecioUnitario.ToString("N2")
+                                        </td>
+                                        <td class="text-end text-nowrap fw-semibold">
+                                            $@item.Subtotal.ToString("N2")
+                                        </td>
+                                        <td class="text-end">
+                                            <form method="post" asp-page-handler="Eliminar">
+                                                <input type="hidden" name="itemId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-link text-danger p-0"
+                                                        title="Eliminar">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <a asp-page="/Client/Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Seguir comprando
+                        </a>
+                        <form method="post" asp-page-handler="Vaciar"
+                              onsubmit="return confirm('¿Vaciar todo el carrito?')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash me-1"></i>Vaciar carrito
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen y checkout -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Resumen del pedido</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal (@Model.Carrito.CantidadItems items)</span>
+                            <span>$@Model.Carrito.Subtotal.ToString("N2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Impuestos</span>
+                            <span>$@Model.Carrito.Impuestos.ToString("N2")</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span class="text-vshop">$@Model.Carrito.Total.ToString("N2")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Datos de envío</h6>
+                        <form method="post" asp-page-handler="Checkout">
+                            <div class="mb-3">
+                                <label asp-for="Checkout.DireccionEnvio" class="form-label small fw-semibold">
+                                    Dirección
+                                </label>
+                                <input asp-for="Checkout.DireccionEnvio" class="form-control form-control-sm"
+                                       placeholder="Calle, número, apartamento..." required />
+                                <span asp-validation-for="Checkout.DireccionEnvio" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Checkout.Ciudad" class="form-label small fw-semibold">Ciudad</label>
+                                <input asp-for="Checkout.Ciudad" class="form-control form-control-sm"
+                                       placeholder="Santo Domingo" required />
+                                <span asp-validation-for="Checkout.Ciudad" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Checkout.Telefono" class="form-label small fw-semibold">
+                                    Teléfono
+                                </label>
+                                <input asp-for="Checkout.Telefono" class="form-control form-control-sm"
+                                       placeholder="809-000-0000" required />
+                                <span asp-validation-for="Checkout.Telefono" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Checkout.MetodoPago" class="form-label small fw-semibold">
+                                    Método de pago
+                                </label>
+                                <select asp-for="Checkout.MetodoPago" class="form-select form-select-sm">
+                                    <option value="Tarjeta">Tarjeta de crédito/débito</option>
+                                    <option value="Transferencia">Transferencia bancaria</option>
+                                    <option value="Efectivo">Pago contra entrega</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Checkout.Notas" class="form-label small fw-semibold">
+                                    Notas <span class="text-muted">(opcional)</span>
+                                </label>
+                                <textarea asp-for="Checkout.Notas" class="form-control form-control-sm" rows="2"
+                                          placeholder="Instrucciones especiales de entrega..."></textarea>
+                            </div>
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-vshop py-2">
+                                    <i class="fas fa-credit-card me-1"></i>Confirmar pedido
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
